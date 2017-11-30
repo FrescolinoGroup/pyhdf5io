@@ -22,10 +22,10 @@ except IOError:
 
 with open('version.txt', 'r') as f:
     version = f.read().strip()
-    
-requirements = []
+
+requirements = ['numpy', 'decorator', 'h5py']
 if sys.version_info < (3,):
-    requirements.append('fsc')
+    raise ValueError('only Python 3.x and higher are supported')
 
 setup(
     name=pkgname_qualified,
