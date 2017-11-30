@@ -16,6 +16,10 @@ def subscribe_serialize(type_tag):
     """
 
     def inner(cls):  # pylint: disable=missing-docstring
+        if type_tag in SERIALIZE_MAPPING:
+            raise ValueError(
+                "The given 'type_tag' exists already in the SERIALIZE_MAPPING"
+            )
         SERIALIZE_MAPPING[type_tag] = cls
 
         @decorator
