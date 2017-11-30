@@ -1,50 +1,47 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-#
-# Author:  Dominik Gresch <greschd@gmx.ch>
-# Date:    30.03.2016 00:29:06 CEST
-# File:    setup.py
+"""
+Usage: pip install .[dev]
+"""
 
 import sys
 
 from setuptools import setup
 
-pkgname = 'hdf5_io'
-pkgname_qualified = 'fsc.' + pkgname
+PKGNAME = 'hdf5_io'
+PKGNAME_QUALIFIED = 'fsc.' + PKGNAME
 
 with open('doc/description.txt', 'r') as f:
-    description = f.read()
+    DESCRIPTION = f.read()
 try:
     with open('doc/README', 'r') as f:
-        readme = f.read()
+        README = f.read()
 except IOError:
-    readme = description
+    README = DESCRIPTION
 
 with open('version.txt', 'r') as f:
-    version = f.read().strip()
+    VERSION = f.read().strip()
 
-requirements = ['numpy', 'decorator', 'h5py']
-if sys.version_info < (3,):
+if sys.version_info < (3, ):
     raise ValueError('only Python 3.x and higher are supported')
 
 setup(
-    name=pkgname_qualified,
-    version=version,
-    packages=[
-        pkgname_qualified
-    ],
-    url='http://frescolinogroup.github.io/frescolino/pyhdf5io/' + '.'.join(version.split('.')[:2]),
+    name=PKGNAME_QUALIFIED,
+    version=VERSION,
+    packages=[PKGNAME_QUALIFIED],
+    url='http://frescolinogroup.github.io/frescolino/pyhdf5io/' +
+    '.'.join(VERSION.split('.')[:2]),
     include_package_data=True,
     author='C. Frescolino',
     author_email='frescolino@lists.phys.ethz.ch',
-    description=description,
-    install_requires=requirements,
-    long_description=readme,
+    description=DESCRIPTION,
+    install_requires=['numpy', 'decorator', 'h5py', 'fsc.export'],
+    extras_require={
+        'dev': ['pytest', 'yapf==0.20', 'prospector', 'pre-commit']
+    },
+    long_description=README,
     classifiers=[
         'License :: OSI Approved :: Apache Software License',
         'Programming Language :: Python :: 2.7',
-        'Programming Language :: Python :: 3',
-        'Topic :: Utilities'
+        'Programming Language :: Python :: 3', 'Topic :: Utilities'
     ],
     license='Apache',
 )
