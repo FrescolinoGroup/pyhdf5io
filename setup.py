@@ -35,7 +35,8 @@ setup(
     description=DESCRIPTION,
     install_requires=['numpy', 'decorator', 'h5py', 'fsc.export'],
     extras_require={
-        'dev': ['pytest', 'yapf==0.20', 'prospector', 'pre-commit']
+        'dev':
+        ['pytest', 'pytest-cov', 'yapf==0.20', 'prospector', 'pre-commit']
     },
     long_description=README,
     classifiers=[
