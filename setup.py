@@ -39,10 +39,10 @@ setup(
         ['pytest', 'pytest-cov', 'yapf==0.20', 'prospector', 'pre-commit']
     },
     long_description=README,
-    classifiers=[
+    classifiers=[ # yapf: disable
         'License :: OSI Approved :: Apache Software License',
-        'Programming Language :: Python :: 2.7',
-        'Programming Language :: Python :: 3', 'Topic :: Utilities'
+        'Programming Language :: Python :: 3',
+        'Topic :: Utilities'
     ],
     license='Apache',
 )
