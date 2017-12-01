@@ -58,6 +58,14 @@ def test_handle_method():
     assert x == y
 
 
+def test_invalid(check_save_load):  # pylint: disable=redefined-outer-name
+    """
+    Test that saving an object which cannot be serialized raises TypeError.
+    """
+    with pytest.raises(TypeError):
+        check_save_load(1.)
+
+
 def test_list(check_save_load):  # pylint: disable=redefined-outer-name
     """
     Test nested list serialization.
