@@ -10,17 +10,20 @@ SERIALIZE_MAPPING = {}
 
 
 @export
-def subscribe_serialize(type_tag):
+def subscribe_serialize(type_tag, extra_tags=()):
     """
     Class decorator that subscribes the class for serialization, with the given type_tag.
     """
 
     def inner(cls):  # pylint: disable=missing-docstring
-        if type_tag in SERIALIZE_MAPPING:
-            raise ValueError(
-                "The given 'type_tag' exists already in the SERIALIZE_MAPPING"
-            )
-        SERIALIZE_MAPPING[type_tag] = cls
+        all_type_tags = [type_tag] + list(extra_tags)
+        for tag in all_type_tags:
+            if tag in SERIALIZE_MAPPING:
+                raise ValueError(
+                    "The given 'type_tag' {} exists already in the SERIALIZE_MAPPING".
+                    format(tag)
+                )
+            SERIALIZE_MAPPING[tag] = cls
 
         @decorator
         def set_type_tag(to_hdf5_func, self, hdf5_handle):
@@ -31,7 +34,7 @@ def subscribe_serialize(type_tag):
 
         @decorator
         def check_type_tag(from_hdf5_func, cls, hdf5_handle):
-            assert hdf5_handle['type_tag'].value == type_tag
+            assert hdf5_handle['type_tag'].value in all_type_tags
             return from_hdf5_func(cls, hdf5_handle)
 
         cls.from_hdf5 = classmethod(check_type_tag(cls.from_hdf5.__func__))  # pylint: disable=no-value-for-parameter

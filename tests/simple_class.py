@@ -5,7 +5,9 @@ Defines a simple serializable class.
 from fsc.hdf5_io import subscribe_serialize, Serializable
 
 
-@subscribe_serialize('test.simple_class')
+@subscribe_serialize(
+    'test.simple_class', extra_tags=('test.simple_class_old_tag', )
+)
 class SimpleClass(Serializable):
     """
     Simple class that implements the Serializable concept.
