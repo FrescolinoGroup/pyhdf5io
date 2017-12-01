@@ -1,3 +1,7 @@
+"""
+Defines a simple serializable class.
+"""
+
 from fsc.hdf5_io import subscribe_serialize, Serializable
 
 
