@@ -25,8 +25,6 @@ To define how the Snek is serialized to HDF5, we add a ``to_hdf5`` method. This 
 
 For de-serialization, the ``from_hdf5`` classmethod should be implemented. Again, this method is passed a ``hdf5_handle``. It should return the deserialized object.
 
-Notice also that we inherit from :class:`.HDF5Enabled`. This abstract base class checks for the existence of the HDF5 (de-)serialization functions, and adds methods ``to_hdf5_file`` and ``from_hdf5_file`` to save and load directly to a file.
-
 Finally, the :func:`.subscribe_hdf5` class decorator is used to define a unique ``type_tag`` which identifies this class.
 
 .. note::
@@ -48,6 +46,8 @@ Finally, the :func:`.subscribe_hdf5` class decorator is used to define a unique 
        ...:
 
     In [0]: HDF5Snek(12)
+
+Notice also that we inherit from :class:`.HDF5Enabled`. This abstract base class checks for the existence of the HDF5 (de-)serialization functions, and adds methods ``to_hdf5_file`` and ``from_hdf5_file`` to save and load directly to a file.
 
 Now we can use the :func:`.save` and :func:`.load` methods to save and load sneks in HDF5 format:
 
@@ -74,4 +74,4 @@ You can also save and load lists or dictionaries containing Sneks:
        ...:     save([HDF5Snek(2), HDF5Snek(4)], f.name)
        ...:     snek_2, snek_4 = load(f.name)
 
-    In [0]: snek_4
+    In [0]: print(snek_2, snek_4)
