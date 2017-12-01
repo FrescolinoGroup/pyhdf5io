@@ -1,1 +1,1 @@
-This should describe the module very briefly (about one sentence). 
+A tool for managing HDF5 serialization of complex objects across projects.

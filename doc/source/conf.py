@@ -31,10 +31,19 @@ import fsc.hdf5_io
 # ones.
 extensions = [
     'sphinx.ext.autodoc', 'sphinx.ext.mathjax', 'sphinx.ext.viewcode',
-    'sphinx.ext.intersphinx'
+    'sphinx.ext.intersphinx', 'IPython.sphinxext.ipython_console_highlighting',
+    'IPython.sphinxext.ipython_directive'
 ]
 
-intersphinx_mapping = {'python': ('https://docs.python.org/3', None)}
+intersphinx_mapping = {
+    'python': ('https://docs.python.org/3', None),
+    'h5py': ('http://docs.h5py.org/en/latest', None)
+}
+
+rst_prolog = """
+.. role:: strike
+    :class: strike
+"""
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -51,7 +60,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'pyhdf5io'
-copyright = u'2016, C. Frescolino'
+copyright = u'2017, C. Frescolino'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the

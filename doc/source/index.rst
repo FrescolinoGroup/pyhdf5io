@@ -1,15 +1,14 @@
-pyhdf5io
+fsc.hdf5_io
 ===========
 
-The developer of this module is too lazy to write an introduction. He brings shame and dishonor upon himself and, more importantly, the great C. Frescolino. Let it be known that he shall acquire beers for all frescolino developers to redeem his sins.
+This module defines a common interface for classes that can be saved to HDF5 format. This allows saving objects from different projects to the same HDF5 file.
 
 Tutorial, Examples and Documentation
 ====================================
 .. toctree::
     :maxdepth: 2
-    
+
     tutorial.rst
-    examples.rst
     documentation.rst
 
 Indices and tables

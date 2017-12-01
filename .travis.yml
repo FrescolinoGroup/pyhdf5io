@@ -11,7 +11,7 @@ matrix:
     - python: 3.6
       env: TEST_TYPE="compliance"
 install:
-  - pip install .[dev]
+  - pip install .
 script:
-  - if [ "$TEST_TYPE" == "compliance" ] ; then pre-commit run --all-files ; fi
+  - if [ "$TEST_TYPE" == "compliance" ] ; then pip install .[dev]; pre-commit run --all-files ; fi
   - if [ "$TEST_TYPE" == "test" ] ; then cd tests; py.test ; fi

@@ -57,4 +57,7 @@ class Serializable(abc.ABC):
 
 @export  # pylint: disable=abstract-method
 class HDF5Enabled(Serializable, Deserializable):
+    """
+    Base class for data which can be serialized to and deserialized from HDF5.
+    """
     pass

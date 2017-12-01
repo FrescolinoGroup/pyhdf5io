@@ -9,7 +9,7 @@ from collections.abc import Iterable, Mapping
 import h5py
 from fsc.export import export
 
-from ._serializable import HDF5Enabled, Deserializable
+from ._base_classes import HDF5Enabled, Deserializable
 from ._subscribe import SERIALIZE_MAPPING, subscribe_hdf5
 
 __all__ = ['save', 'load']

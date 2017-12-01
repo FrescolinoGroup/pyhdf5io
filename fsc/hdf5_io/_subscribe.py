@@ -13,6 +13,12 @@ SERIALIZE_MAPPING = {}
 def subscribe_hdf5(type_tag, extra_tags=()):
     """
     Class decorator that subscribes the class for serialization, with the given type_tag.
+
+    :param type_tag: Unique identifier of the class, which is injected into the HDF5 data to identify the class.
+    :type type_tag: str
+
+    :param extra_tags: Additional tags which should be deserialized to the given class.
+    :type extra_tags: tuple(str)
     """
 
     def inner(cls):  # pylint: disable=missing-docstring
