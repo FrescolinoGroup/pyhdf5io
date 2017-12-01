@@ -9,7 +9,7 @@ In this tutorial we'll see how to add HDF5 serialization to classes. Let's start
        ...:     def __init__(self, length):
        ...:         self.length = length
        ...:     def __repr__(self):
-       ...:         return '>-8' + '=' * self.length + '>'
+       ...:         return '-8' + '=' * self.length + '>'
        ...:
 
     In [0]: Snek(10)
@@ -24,6 +24,8 @@ To make this Snek HDF5 serializable, we need to answer these questions three:
 To define how the Snek is serialized to HDF5, we add a ``to_hdf5`` method. This method is passed a ``hdf5_handle``, which is a :py:class:`h5py.File<File>` or :py:class:`h5py.Group<Group>` defining the (current) root of the HDF5 file where the object should be added.
 
 For de-serialization, the ``from_hdf5`` classmethod should be implemented. Again, this method is passed a ``hdf5_handle``. It should return the deserialized object.
+
+Notice also that we inherit from :class:`.HDF5Enabled`. This abstract base class checks for the existence of the HDF5 (de-)serialization functions, and adds methods ``to_hdf5_file`` and ``from_hdf5_file`` to save and load directly to a file.
 
 Finally, the :func:`.subscribe_hdf5` class decorator is used to define a unique ``type_tag`` which identifies this class.
 
