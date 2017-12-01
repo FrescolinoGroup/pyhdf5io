@@ -5,21 +5,34 @@ Tests for saving and loading a simple class.
 import tempfile
 
 import h5py
+import pytest
 
 from fsc.hdf5_io import save, load
 
 from simple_class import SimpleClass
 
 
-def test_file_freefunc():
+@pytest.fixture
+def check_save_load():
+    """
+    Check that a given object remains the same when saved and loaded.
+    """
+
+    def inner(x):
+        with tempfile.NamedTemporaryFile() as named_file:
+            save(x, named_file.name)
+            y = load(named_file.name)
+        assert x == y
+
+    return inner
+
+
+def test_file_freefunc(check_save_load):  # pylint: disable=redefined-outer-name
     """
     Test saving and loading to file with the free functions.
     """
     x = SimpleClass(5)
-    with tempfile.NamedTemporaryFile() as named_file:
-        save(x, named_file.name)
-        y = load(named_file.name)
-    assert x == y
+    check_save_load(x)
 
 
 def test_file_method():
@@ -43,3 +56,19 @@ def test_handle_method():
         x.to_hdf5_file(named_file.name)
         y = SimpleClass.from_hdf5_file(named_file.name)
     assert x == y
+
+
+def test_list(check_save_load):  # pylint: disable=redefined-outer-name
+    """
+    Test nested list serialization.
+    """
+    x = [SimpleClass(3), [SimpleClass(5), SimpleClass(10)]]
+    check_save_load(x)
+
+
+def test_dict(check_save_load):  # pylint: disable=redefined-outer-name
+    """
+    Test dict serialization.
+    """
+    x = {'a': SimpleClass(4), 'b': [SimpleClass(1), SimpleClass(10)]}
+    check_save_load(x)

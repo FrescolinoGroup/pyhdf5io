@@ -2,15 +2,15 @@
 Defines a simple serializable class.
 """
 
-from fsc.hdf5_io import subscribe_serialize, Serializable
+from fsc.hdf5_io import subscribe_serialize, HDF5Enabled
 
 
 @subscribe_serialize(
     'test.simple_class', extra_tags=('test.simple_class_old_tag', )
 )
-class SimpleClass(Serializable):
+class SimpleClass(HDF5Enabled):
     """
-    Simple class that implements the Serializable concept.
+    Simple class that implements the HDF5Enabled concept.
     """
 
     def __init__(self, x):
