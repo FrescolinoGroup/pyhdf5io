@@ -10,7 +10,7 @@ import h5py
 from fsc.export import export
 
 from ._serializable import HDF5Enabled, Deserializable
-from ._serialize_mapping import SERIALIZE_MAPPING
+from ._subscribe import SERIALIZE_MAPPING, subscribe_hdf5
 
 __all__ = ['save', 'load']
 
@@ -20,9 +20,10 @@ class _SpecialTypeTags(SimpleNamespace):
     DICT = 'builtins.dict'
 
 
+@subscribe_hdf5(_SpecialTypeTags.DICT)
 class _DictDeserializer(Deserializable):
-    @staticmethod
-    def from_hdf5(hdf5_handle):
+    @classmethod
+    def from_hdf5(cls, hdf5_handle):
         res = dict()
         value_group = hdf5_handle['value']
         for key in value_group:
@@ -30,17 +31,26 @@ class _DictDeserializer(Deserializable):
         return res
 
 
+@subscribe_hdf5(_SpecialTypeTags.LIST)
 class _ListDeserializer(Deserializable):
-    @staticmethod
-    def from_hdf5(hdf5_handle):
+    @classmethod
+    def from_hdf5(cls, hdf5_handle):
         int_keys = [key for key in hdf5_handle if key != 'type_tag']
         return [
             from_hdf5(hdf5_handle[key]) for key in sorted(int_keys, key=int)
         ]
 
 
-SERIALIZE_MAPPING[_SpecialTypeTags.DICT] = _DictDeserializer
-SERIALIZE_MAPPING[_SpecialTypeTags.LIST] = _ListDeserializer
+@export
+def from_hdf5(hdf5_handle):
+    """
+    Deserializes a given object from HDF5 format.
+
+    :param hdf5_handle: HDF5 location where the serialized object is stored.
+    :type hdf5_handle: :py:class:`h5py.File<File>` or :py:class:`h5py.Group<Group>`.
+    """
+    type_tag = hdf5_handle['type_tag'].value
+    return SERIALIZE_MAPPING[type_tag].from_hdf5(hdf5_handle)
 
 
 @export
@@ -82,15 +92,18 @@ def _(obj, hdf5_handle):
 
 
 @export
-def from_hdf5(hdf5_handle):
+def from_hdf5_file(hdf5_file):
     """
-    Deserializes a given object from HDF5 format.
+    Loads the object from a file in HDF5 format.
 
-    :param hdf5_handle: HDF5 location where the serialized object is stored.
-    :type hdf5_handle: :py:class:`h5py.File<File>` or :py:class:`h5py.Group<Group>`.
+    :param hdf5_file: Path of the file.
+    :type hdf5_file: str
     """
-    type_tag = hdf5_handle['type_tag'].value
-    return SERIALIZE_MAPPING[type_tag].from_hdf5(hdf5_handle)
+    with h5py.File(hdf5_file, 'r') as f:
+        return from_hdf5(f)
+
+
+load = from_hdf5_file  # pylint: disable=invalid-name
 
 
 @export
@@ -108,18 +121,3 @@ def to_hdf5_file(obj, hdf5_file):
 
 
 save = to_hdf5_file  # pylint: disable=invalid-name
-
-
-@export
-def from_hdf5_file(hdf5_file):
-    """
-    Loads the object from a file in HDF5 format.
-
-    :param hdf5_file: Path of the file.
-    :type hdf5_file: str
-    """
-    with h5py.File(hdf5_file, 'r') as f:
-        return from_hdf5(f)
-
-
-load = from_hdf5_file  # pylint: disable=invalid-name

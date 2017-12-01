@@ -1,9 +1,9 @@
 """
-Test the subscribe_serialize decorator.
+Test the subscribe_hdf5 decorator.
 """
 
 import pytest
-from fsc.hdf5_io import subscribe_serialize
+from fsc.hdf5_io import subscribe_hdf5
 
 from simple_class import SimpleClass
 
@@ -14,7 +14,7 @@ def test_duplicate_throws():
     """
     with pytest.raises(ValueError):
 
-        @subscribe_serialize('test.simple_class')
+        @subscribe_hdf5('test.simple_class')
         class Foo:  # pylint: disable=unused-variable
             pass
 

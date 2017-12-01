@@ -6,6 +6,6 @@ from ._version import __version__
 
 from ._save_load import *
 from ._serializable import *
-from ._serialize_mapping import *
+from ._subscribe import *
 
-__all__ = _save_load.__all__ + _serializable.__all__ + _serialize_mapping.__all__  # pylint: disable=undefined-variable
+__all__ = _save_load.__all__ + _serializable.__all__ + _subscribe.__all__  # pylint: disable=undefined-variable

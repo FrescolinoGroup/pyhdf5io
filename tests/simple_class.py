@@ -2,10 +2,10 @@
 Defines a simple serializable class.
 """
 
-from fsc.hdf5_io import subscribe_serialize, HDF5Enabled
+from fsc.hdf5_io import subscribe_hdf5, HDF5Enabled
 
 
-@subscribe_serialize(
+@subscribe_hdf5(
     'test.simple_class', extra_tags=('test.simple_class_old_tag', )
 )
 class SimpleClass(HDF5Enabled):
