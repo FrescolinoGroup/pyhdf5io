@@ -13,19 +13,30 @@ from fsc.hdf5_io import save, load
 from simple_class import SimpleClass
 
 
-@pytest.fixture
-def check_save_load():
+@pytest.fixture(params=['tempfile', 'permanent'])
+def check_save_load(request, test_name, sample):
     """
     Check that a given object remains the same when saved and loaded.
     """
 
-    def inner(x):
+    def inner_tempfile(x):
         with tempfile.NamedTemporaryFile() as named_file:
             save(x, named_file.name)
             y = load(named_file.name)
         assert x == y
 
-    return inner
+    def inner_permanent(x):
+        file_name = sample((test_name + '.hdf5').replace('/', '_'))
+        try:
+            y = load(file_name)
+            assert x == y
+        except IOError:
+            save(x, file_name)
+            raise ValueError("Sample file did not exist")
+
+    if request.param == 'tempfile':
+        return inner_tempfile
+    return inner_permanent
 
 
 def test_file_freefunc(check_save_load):  # pylint: disable=redefined-outer-name
@@ -63,7 +74,7 @@ def test_invalid(check_save_load):  # pylint: disable=redefined-outer-name
     """
     Test that saving an object which cannot be serialized raises TypeError.
     """
-    with pytest.raises(TypeError):
+    with pytest.raises((TypeError, KeyError)):
         check_save_load(lambda x: True)
 
 
