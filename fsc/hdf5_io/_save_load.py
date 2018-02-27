@@ -7,7 +7,7 @@ from functools import singledispatch
 import h5py
 from fsc.export import export
 
-from ._subscribe import SERIALIZE_MAPPING
+from ._subscribe import SERIALIZE_MAPPING, TYPE_TAG_KEY
 
 __all__ = ['save', 'load']
 
@@ -20,7 +20,7 @@ def from_hdf5(hdf5_handle):
     :param hdf5_handle: HDF5 location where the serialized object is stored.
     :type hdf5_handle: :py:class:`h5py.File<File>` or :py:class:`h5py.Group<Group>`.
     """
-    type_tag = hdf5_handle['type_tag'].value
+    type_tag = hdf5_handle[TYPE_TAG_KEY].value
     return SERIALIZE_MAPPING[type_tag].from_hdf5(hdf5_handle)
 
 

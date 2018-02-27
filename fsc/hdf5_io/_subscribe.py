@@ -7,6 +7,7 @@ from decorator import decorator
 from fsc.export import export
 
 SERIALIZE_MAPPING = {}
+TYPE_TAG_KEY = 'type_tag'
 
 
 @export
@@ -35,14 +36,14 @@ def subscribe_hdf5(type_tag, extra_tags=()):
 
             @decorator
             def set_type_tag(to_hdf5_func, self, hdf5_handle):
-                hdf5_handle['type_tag'] = type_tag
+                hdf5_handle[TYPE_TAG_KEY] = type_tag
                 return to_hdf5_func(self, hdf5_handle)
 
             cls.to_hdf5 = set_type_tag(cls.to_hdf5)  # pylint: disable=no-value-for-parameter
 
         @decorator
         def check_type_tag(from_hdf5_func, cls, hdf5_handle, **kwargs):
-            assert hdf5_handle['type_tag'].value in all_type_tags
+            assert hdf5_handle[TYPE_TAG_KEY].value in all_type_tags
             return from_hdf5_func(cls, hdf5_handle, **kwargs)
 
         cls.from_hdf5 = classmethod(check_type_tag(cls.from_hdf5.__func__))  # pylint: disable=no-value-for-parameter

@@ -9,7 +9,7 @@ from collections.abc import Iterable, Mapping
 from ._base_classes import HDF5Enabled, Deserializable
 
 from ._save_load import from_hdf5, to_hdf5
-from ._subscribe import subscribe_hdf5
+from ._subscribe import subscribe_hdf5, TYPE_TAG_KEY
 
 __all__ = []
 
@@ -36,7 +36,7 @@ class _DictDeserializer(Deserializable):
 class _ListDeserializer(Deserializable):
     @classmethod
     def from_hdf5(cls, hdf5_handle):
-        int_keys = [key for key in hdf5_handle if key != 'type_tag']
+        int_keys = [key for key in hdf5_handle if key != TYPE_TAG_KEY]
         return [
             from_hdf5(hdf5_handle[key]) for key in sorted(int_keys, key=int)
         ]
@@ -61,7 +61,7 @@ def add_type_tag(tag):
 
     def outer(func):  # pylint: disable=missing-docstring
         def inner(obj, hdf5_handle):
-            hdf5_handle['type_tag'] = tag
+            hdf5_handle[TYPE_TAG_KEY] = tag
             func(obj, hdf5_handle)
 
         return inner
