@@ -6,7 +6,7 @@ from types import SimpleNamespace
 from numbers import Complex
 from collections.abc import Iterable, Mapping
 
-from ._base_classes import HDF5Enabled, Deserializable
+from ._base_classes import Deserializable
 
 from ._save_load import from_hdf5, to_hdf5
 from ._subscribe import subscribe_hdf5, TYPE_TAG_KEY
@@ -23,6 +23,8 @@ class _SpecialTypeTags(SimpleNamespace):
 
 @subscribe_hdf5(_SpecialTypeTags.DICT)
 class _DictDeserializer(Deserializable):
+    """Helper class to de-serialize dict objects."""
+
     @classmethod
     def from_hdf5(cls, hdf5_handle):
         res = dict()
@@ -34,6 +36,8 @@ class _DictDeserializer(Deserializable):
 
 @subscribe_hdf5(_SpecialTypeTags.LIST)
 class _ListDeserializer(Deserializable):
+    """Helper class to de-serialize list objects."""
+
     @classmethod
     def from_hdf5(cls, hdf5_handle):
         int_keys = [key for key in hdf5_handle if key != TYPE_TAG_KEY]
@@ -44,14 +48,11 @@ class _ListDeserializer(Deserializable):
 
 @subscribe_hdf5(_SpecialTypeTags.NUMBER, extra_tags=(_SpecialTypeTags.STR, ))
 class _ValueDeserializer(Deserializable):
+    """Helper class to de-serialize numbers and strings objects."""
+
     @classmethod
     def from_hdf5(cls, hdf5_handle):
         return hdf5_handle['value'].value
-
-
-@to_hdf5.register(HDF5Enabled)
-def _(obj, hdf5_handle):
-    obj.to_hdf5(hdf5_handle)
 
 
 def add_type_tag(tag):
@@ -71,7 +72,7 @@ def add_type_tag(tag):
 
 @to_hdf5.register(Iterable)
 @add_type_tag(_SpecialTypeTags.LIST)
-def _(obj, hdf5_handle):
+def _(obj, hdf5_handle):  # pylint: disable=missing-docstring
     for i, part in enumerate(obj):
         sub_group = hdf5_handle.create_group(str(i))
         to_hdf5(part, sub_group)
@@ -79,7 +80,7 @@ def _(obj, hdf5_handle):
 
 @to_hdf5.register(Mapping)
 @add_type_tag(_SpecialTypeTags.DICT)
-def _(obj, hdf5_handle):
+def _(obj, hdf5_handle):  # pylint: disable=missing-docstring
     value_group = hdf5_handle.create_group('value')
     for key, val in obj.items():
         sub_group = value_group.create_group(key)

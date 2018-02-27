@@ -26,6 +26,9 @@ def check_save_load(request, test_name, sample):
         assert x == y
 
     def inner_permanent(x):
+        """
+        Compares the current value against a value loaded from a sample file. The file is created if it doesn't exist, and an error is raised.
+        """
         file_name = sample((test_name + '.hdf5').replace('/', '_'))
         try:
             y = load(file_name)

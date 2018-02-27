@@ -7,6 +7,7 @@ from functools import singledispatch
 import h5py
 from fsc.export import export
 
+from ._base_classes import HDF5Enabled
 from ._subscribe import SERIALIZE_MAPPING, TYPE_TAG_KEY
 
 __all__ = ['save', 'load']
@@ -38,6 +39,11 @@ def to_hdf5(obj, hdf5_handle):  # pylint: disable=unused-argument
     raise TypeError(
         "Cannot serialize object '{}' of type '{}'".format(obj, type(obj))
     )
+
+
+@to_hdf5.register(HDF5Enabled)
+def _(obj, hdf5_handle):
+    obj.to_hdf5(hdf5_handle)
 
 
 @export
