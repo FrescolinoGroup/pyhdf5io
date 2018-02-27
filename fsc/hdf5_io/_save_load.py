@@ -4,6 +4,7 @@ Defines free functions to serialize / deserialize bands-inspect objects to HDF5.
 
 from types import SimpleNamespace
 from functools import singledispatch
+from numbers import Complex
 from collections.abc import Iterable, Mapping
 
 import h5py
@@ -18,6 +19,7 @@ __all__ = ['save', 'load']
 class _SpecialTypeTags(SimpleNamespace):
     LIST = 'builtins.list'
     DICT = 'builtins.dict'
+    NUMBER = 'builtins.number'
 
 
 @subscribe_hdf5(_SpecialTypeTags.DICT)
@@ -39,6 +41,13 @@ class _ListDeserializer(Deserializable):
         return [
             from_hdf5(hdf5_handle[key]) for key in sorted(int_keys, key=int)
         ]
+
+
+@subscribe_hdf5(_SpecialTypeTags.NUMBER)
+class _NumpyIntDeserializer(Deserializable):
+    @classmethod
+    def from_hdf5(cls, hdf5_handle):
+        return hdf5_handle['value'].value
 
 
 @export
@@ -89,6 +98,12 @@ def _(obj, hdf5_handle):
     for key, val in obj.items():
         sub_group = value_group.create_group(key)
         to_hdf5(val, sub_group)
+
+
+@to_hdf5.register(Complex)
+def _(obj, hdf5_handle):
+    hdf5_handle['type_tag'] = _SpecialTypeTags.NUMBER
+    hdf5_handle['value'] = obj
 
 
 @export

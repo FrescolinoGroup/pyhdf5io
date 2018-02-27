@@ -6,6 +6,7 @@ import tempfile
 
 import h5py
 import pytest
+import numpy as np
 
 from fsc.hdf5_io import save, load
 
@@ -63,7 +64,15 @@ def test_invalid(check_save_load):  # pylint: disable=redefined-outer-name
     Test that saving an object which cannot be serialized raises TypeError.
     """
     with pytest.raises(TypeError):
-        check_save_load(1.)
+        check_save_load(lambda x: True)
+
+
+def test_number(check_save_load):  # pylint: disable=redefined-outer-name
+    """
+    Test number serialization.
+    """
+    x = [3, np.float(2.3), 1 + 3j]
+    check_save_load(x)
 
 
 def test_list(check_save_load):  # pylint: disable=redefined-outer-name
