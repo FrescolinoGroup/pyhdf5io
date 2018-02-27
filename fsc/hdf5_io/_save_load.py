@@ -16,7 +16,7 @@ __all__ = ['save', 'load']
 @export
 def from_hdf5(hdf5_handle):
     """
-    Deserializes a given object from HDF5 format.
+    Deserializes the given HDF5 handle into an object.
 
     :param hdf5_handle: HDF5 location where the serialized object is stored.
     :type hdf5_handle: :py:class:`h5py.File<File>` or :py:class:`h5py.Group<Group>`.
