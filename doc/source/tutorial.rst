@@ -9,7 +9,7 @@ In this tutorial we'll see how to add HDF5 serialization to classes. Let's start
        ...:     def __init__(self, length):
        ...:         self.length = length
        ...:     def __repr__(self):
-       ...:         return '-8' + '=' * self.length + '>'
+       ...:         return '≻:' + '=' * self.length + '>···'
        ...:
 
     In [0]: Snek(10)
@@ -49,7 +49,7 @@ Finally, the :func:`.subscribe_hdf5` class decorator is used to define a unique 
 
 Notice also that we inherit from :class:`.HDF5Enabled`. This abstract base class checks for the existence of the HDF5 (de-)serialization functions, and adds methods ``to_hdf5_file`` and ``from_hdf5_file`` to save and load directly to a file.
 
-Now we can use the :func:`.save` and :func:`.load` methods to save and load sneks in HDF5 format:
+Now we can use the :func:`.save` and :func:`.load` methods to save and load Sneks in HDF5 format:
 
 .. ipython::
 
