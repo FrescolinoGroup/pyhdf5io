@@ -18,6 +18,7 @@ class _SpecialTypeTags(SimpleNamespace):
     LIST = 'builtins.list'
     DICT = 'builtins.dict'
     NUMBER = 'builtins.number'
+    STR = 'builtins.str'
 
 
 @subscribe_hdf5(_SpecialTypeTags.DICT)
@@ -41,8 +42,8 @@ class _ListDeserializer(Deserializable):
         ]
 
 
-@subscribe_hdf5(_SpecialTypeTags.NUMBER)
-class _NumpyIntDeserializer(Deserializable):
+@subscribe_hdf5(_SpecialTypeTags.NUMBER, extra_tags=(_SpecialTypeTags.STR, ))
+class _ValueDeserializer(Deserializable):
     @classmethod
     def from_hdf5(cls, hdf5_handle):
         return hdf5_handle['value'].value
@@ -53,17 +54,32 @@ def _(obj, hdf5_handle):
     obj.to_hdf5(hdf5_handle)
 
 
+def add_type_tag(tag):
+    """
+    Decorator which adds the given type tag when creating the HDF5 object.
+    """
+
+    def outer(func):  # pylint: disable=missing-docstring
+        def inner(obj, hdf5_handle):
+            hdf5_handle['type_tag'] = tag
+            func(obj, hdf5_handle)
+
+        return inner
+
+    return outer
+
+
 @to_hdf5.register(Iterable)
+@add_type_tag(_SpecialTypeTags.LIST)
 def _(obj, hdf5_handle):
-    hdf5_handle['type_tag'] = _SpecialTypeTags.LIST
     for i, part in enumerate(obj):
         sub_group = hdf5_handle.create_group(str(i))
         to_hdf5(part, sub_group)
 
 
 @to_hdf5.register(Mapping)
+@add_type_tag(_SpecialTypeTags.DICT)
 def _(obj, hdf5_handle):
-    hdf5_handle['type_tag'] = _SpecialTypeTags.DICT
     value_group = hdf5_handle.create_group('value')
     for key, val in obj.items():
         sub_group = value_group.create_group(key)
@@ -71,6 +87,16 @@ def _(obj, hdf5_handle):
 
 
 @to_hdf5.register(Complex)
+@add_type_tag(_SpecialTypeTags.NUMBER)
 def _(obj, hdf5_handle):
-    hdf5_handle['type_tag'] = _SpecialTypeTags.NUMBER
+    _value_serializer(obj, hdf5_handle)
+
+
+@to_hdf5.register(str)
+@add_type_tag(_SpecialTypeTags.STR)
+def _(obj, hdf5_handle):
+    _value_serializer(obj, hdf5_handle)
+
+
+def _value_serializer(obj, hdf5_handle):
     hdf5_handle['value'] = obj
