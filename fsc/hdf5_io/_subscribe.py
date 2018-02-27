@@ -13,7 +13,7 @@ TYPE_TAG_KEY = 'type_tag'
 @export
 def subscribe_hdf5(type_tag, extra_tags=()):
     """
-    Class decorator that subscribes the class for serialization, with the given type_tag.
+    Class decorator that subscribes the class with the given type_tag for serialization.
 
     :param type_tag: Unique identifier of the class, which is injected into the HDF5 data to identify the class.
     :type type_tag: str

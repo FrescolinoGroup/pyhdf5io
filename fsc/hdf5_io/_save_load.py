@@ -33,7 +33,7 @@ def to_hdf5(obj, hdf5_handle):  # pylint: disable=unused-argument
 
     :param obj: Object to serialize.
 
-    :param hdf5_handle: HDF5 location where the serialized object is stored.
+    :param hdf5_handle: HDF5 location where the serialized object gets stored.
     :type hdf5_handle: :py:class:`h5py.File<File>` or :py:class:`h5py.Group<Group>`.
     """
     raise TypeError(
@@ -59,6 +59,7 @@ def from_hdf5_file(hdf5_file):
 
 
 load = from_hdf5_file  # pylint: disable=invalid-name
+load.__doc__ = """Alias for :func:`from_hdf5_file`."""
 
 
 @export
@@ -76,3 +77,4 @@ def to_hdf5_file(obj, hdf5_file):
 
 
 save = to_hdf5_file  # pylint: disable=invalid-name
+save.__doc__ = """Alias for :func:`to_hdf5_file`."""
