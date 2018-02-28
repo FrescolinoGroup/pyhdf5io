@@ -77,7 +77,7 @@ def test_invalid(check_save_load):  # pylint: disable=redefined-outer-name
     """
     Test that saving an object which cannot be serialized raises TypeError.
     """
-    with pytest.raises((TypeError, KeyError)):
+    with pytest.raises((TypeError, ValueError)):
         check_save_load(lambda x: True)
 
 
@@ -109,5 +109,17 @@ def test_dict(check_save_load):  # pylint: disable=redefined-outer-name
     """
     Test dict serialization.
     """
-    x = {'a': SimpleClass(4), 'b': [SimpleClass(1), SimpleClass(10)]}
+    x = {
+        'a': SimpleClass(4),
+        'b': [SimpleClass(1), SimpleClass(10)],
+        SimpleClass(2): 4
+    }
     check_save_load(x)
+
+
+def test_load_old_dict(sample):
+    """
+    Test that the 'legacy' version of dict can be de-serialized.
+    """
+    x = load(sample('old_dict.hdf5'))
+    assert x == {'a': SimpleClass(4), 'b': [SimpleClass(1), SimpleClass(10)]}

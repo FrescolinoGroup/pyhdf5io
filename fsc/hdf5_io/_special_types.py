@@ -27,11 +27,16 @@ class _DictDeserializer(Deserializable):
 
     @classmethod
     def from_hdf5(cls, hdf5_handle):
-        res = dict()
-        value_group = hdf5_handle['value']
-        for key in value_group:
-            res[key] = from_hdf5(value_group[key])
-        return res
+        try:
+            items = from_hdf5(hdf5_handle['items'])
+            return {k: v for k, v in items}
+        # Handle legacy dicts with only string keys:
+        except KeyError:
+            res = dict()
+            value_group = hdf5_handle['value']
+            for key in value_group:
+                res[key] = from_hdf5(value_group[key])
+            return res
 
 
 @subscribe_hdf5(_SpecialTypeTags.LIST)
@@ -80,11 +85,9 @@ def _(obj, hdf5_handle):  # pylint: disable=missing-docstring
 
 @to_hdf5.register(Mapping)
 @add_type_tag(_SpecialTypeTags.DICT)
-def _(obj, hdf5_handle):  # pylint: disable=missing-docstring
-    value_group = hdf5_handle.create_group('value')
-    for key, val in obj.items():
-        sub_group = value_group.create_group(key)
-        to_hdf5(val, sub_group)
+def _(obj, hdf5_handle):
+    items_group = hdf5_handle.create_group('items')
+    to_hdf5(obj.items(), items_group)
 
 
 @to_hdf5.register(Complex)
