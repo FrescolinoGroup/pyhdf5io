@@ -7,7 +7,6 @@ from functools import singledispatch
 import h5py
 from fsc.export import export
 
-from ._base_classes import HDF5Enabled
 from ._subscribe import SERIALIZE_MAPPING, TYPE_TAG_KEY
 
 __all__ = ['save', 'load']
@@ -39,10 +38,26 @@ def from_hdf5(hdf5_handle):
 
 
 @export
-@singledispatch
-def to_hdf5(obj, hdf5_handle):  # pylint: disable=unused-argument
+def to_hdf5(obj, hdf5_handle):
     """
     Serializes a given object to HDF5 format.
+
+    :param obj: Object to serialize.
+
+    :param hdf5_handle: HDF5 location where the serialized object gets stored.
+    :type hdf5_handle: :py:class:`h5py.File<File>` or :py:class:`h5py.Group<Group>`.
+    """
+    try:
+        obj.to_hdf5(hdf5_handle)
+    except AttributeError:
+        to_hdf5_singledispatch(obj, hdf5_handle)
+
+
+@export
+@singledispatch
+def to_hdf5_singledispatch(obj, hdf5_handle):  # pylint: disable=unused-argument
+    """
+    Singledispatch function which is called to serialize and object when it does not have a ``to_hdf5`` method.
 
     :param obj: Object to serialize.
 
@@ -52,11 +67,6 @@ def to_hdf5(obj, hdf5_handle):  # pylint: disable=unused-argument
     raise TypeError(
         "Cannot serialize object '{}' of type '{}'".format(obj, type(obj))
     )
-
-
-@to_hdf5.register(HDF5Enabled)
-def _(obj, hdf5_handle):
-    obj.to_hdf5(hdf5_handle)
 
 
 @export

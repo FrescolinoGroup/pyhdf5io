@@ -8,7 +8,7 @@ from collections.abc import Iterable, Mapping
 
 from ._base_classes import Deserializable
 
-from ._save_load import from_hdf5, to_hdf5
+from ._save_load import from_hdf5, to_hdf5, to_hdf5_singledispatch
 from ._subscribe import subscribe_hdf5, TYPE_TAG_KEY
 
 __all__ = []
@@ -75,7 +75,7 @@ def add_type_tag(tag):
     return outer
 
 
-@to_hdf5.register(Iterable)
+@to_hdf5_singledispatch.register(Iterable)
 @add_type_tag(_SpecialTypeTags.LIST)
 def _(obj, hdf5_handle):  # pylint: disable=missing-docstring
     for i, part in enumerate(obj):
@@ -83,20 +83,20 @@ def _(obj, hdf5_handle):  # pylint: disable=missing-docstring
         to_hdf5(part, sub_group)
 
 
-@to_hdf5.register(Mapping)
+@to_hdf5_singledispatch.register(Mapping)
 @add_type_tag(_SpecialTypeTags.DICT)
 def _(obj, hdf5_handle):
     items_group = hdf5_handle.create_group('items')
     to_hdf5(obj.items(), items_group)
 
 
-@to_hdf5.register(Complex)
+@to_hdf5_singledispatch.register(Complex)
 @add_type_tag(_SpecialTypeTags.NUMBER)
 def _(obj, hdf5_handle):
     _value_serializer(obj, hdf5_handle)
 
 
-@to_hdf5.register(str)
+@to_hdf5_singledispatch.register(str)
 @add_type_tag(_SpecialTypeTags.STR)
 def _(obj, hdf5_handle):
     _value_serializer(obj, hdf5_handle)
