@@ -28,3 +28,6 @@ class SimpleClass(HDF5Enabled):
 
     def __hash__(self):
         return hash(self.x)
+
+    def __iter__(self):
+        return iter([self.x])
