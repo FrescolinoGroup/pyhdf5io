@@ -11,7 +11,7 @@ TYPE_TAG_KEY = 'type_tag'
 
 
 @export
-def subscribe_hdf5(type_tag, extra_tags=()):
+def subscribe_hdf5(type_tag, extra_tags=(), check_on_load=True):
     """
     Class decorator that subscribes the class with the given type_tag for serialization.
 
@@ -20,6 +20,9 @@ def subscribe_hdf5(type_tag, extra_tags=()):
 
     :param extra_tags: Additional tags which should be deserialized to the given class.
     :type extra_tags: tuple(str)
+
+    :param check_on_load: Flag that determines whether the 'type_tag' is checked when de-serializing the object.
+    :type check_on_load: bool
     """
 
     def inner(cls):  # pylint: disable=missing-docstring
@@ -41,12 +44,16 @@ def subscribe_hdf5(type_tag, extra_tags=()):
 
             cls.to_hdf5 = set_type_tag(cls.to_hdf5)  # pylint: disable=no-value-for-parameter
 
-        @decorator
-        def check_type_tag(from_hdf5_func, cls, hdf5_handle, **kwargs):
-            assert hdf5_handle[TYPE_TAG_KEY].value in all_type_tags
-            return from_hdf5_func(cls, hdf5_handle, **kwargs)
+        if check_on_load:
 
-        cls.from_hdf5 = classmethod(check_type_tag(cls.from_hdf5.__func__))  # pylint: disable=no-value-for-parameter
+            @decorator
+            def check_type_tag(from_hdf5_func, cls, hdf5_handle, **kwargs):
+                assert hdf5_handle[TYPE_TAG_KEY].value in all_type_tags
+                return from_hdf5_func(cls, hdf5_handle, **kwargs)
+
+            cls.from_hdf5 = classmethod(check_type_tag(cls.from_hdf5.__func__))  # pylint: disable=no-value-for-parameter
+        else:
+            cls.from_hdf5 = classmethod(cls.from_hdf5.__func__)
         return cls
 
     return inner

@@ -6,7 +6,7 @@ from types import SimpleNamespace
 from numbers import Complex
 from collections.abc import Iterable, Mapping
 
-from ._base_classes import Deserializable
+from .base_classes import Deserializable
 
 from ._save_load import from_hdf5, to_hdf5, to_hdf5_singledispatch
 from ._subscribe import subscribe_hdf5, TYPE_TAG_KEY
