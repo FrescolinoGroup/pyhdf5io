@@ -31,3 +31,18 @@ class SimpleClass(HDF5Enabled):
 
     def __iter__(self):
         return iter([self.x])
+
+
+@subscribe_hdf5('test.legacy_class', check_on_load=False)
+class LegacyClass(SimpleClass):
+    """
+    Class which accepts kwargs in 'from_hdf5', and should work without 'type_tag'.
+    """
+
+    def __init__(self, x, y=0.):
+        super().__init__(x=x)
+        self.y = float(y)
+
+    @classmethod
+    def from_hdf5(cls, hdf5_handle, **kwargs):  # pylint: disable=arguments-differ
+        return cls(x=hdf5_handle['x'].value, **kwargs)

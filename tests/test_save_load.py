@@ -10,7 +10,7 @@ import numpy as np
 
 from fsc.hdf5_io import save, load
 
-from simple_class import SimpleClass
+from simple_class import SimpleClass, LegacyClass
 
 
 @pytest.fixture(params=['tempfile', 'permanent'])
@@ -123,3 +123,12 @@ def test_load_old_dict(sample):
     """
     x = load(sample('old_dict.hdf5'))
     assert x == {'a': SimpleClass(4), 'b': [SimpleClass(1), SimpleClass(10)]}
+
+
+def test_legacyclass_notag(sample):
+    """
+    Test that the 'LegacyClass.from_hdf5_file' works even if no 'type_tag' is given.
+    """
+    x = LegacyClass.from_hdf5_file(sample('no_tag.hdf5'), y=1.2)
+    assert x.x == 10
+    assert x.y == 1.2

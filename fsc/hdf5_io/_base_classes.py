@@ -4,6 +4,8 @@ Base classes for serializing bands-inspect data types.
 
 import abc
 
+import h5py
+
 from fsc.export import export
 
 
@@ -21,15 +23,15 @@ class Deserializable(abc.ABC):
         raise NotImplementedError
 
     @classmethod
-    def from_hdf5_file(cls, hdf5_file):
+    def from_hdf5_file(cls, hdf5_file, *args, **kwargs):
         """
         Loads the object from a file in HDF5 format.
 
         :param hdf5_file: Path of the file.
         :type hdf5_file: str
         """
-        from ._save_load import from_hdf5_file
-        return from_hdf5_file(hdf5_file)
+        with h5py.File(hdf5_file, 'r') as f:
+            return cls.from_hdf5(f, *args, **kwargs)
 
 
 class Serializable(abc.ABC):
