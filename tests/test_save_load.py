@@ -117,6 +117,13 @@ def test_dict(check_save_load):  # pylint: disable=redefined-outer-name
     check_save_load(x)
 
 
+def test_none(check_save_load):  # pylint: disable=redefined-outer-name
+    """
+    Test NoneType serialization.
+    """
+    check_save_load(None)
+
+
 def test_load_old_dict(sample):
     """
     Test that the 'legacy' version of dict can be de-serialized.

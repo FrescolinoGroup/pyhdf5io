@@ -15,10 +15,14 @@ __all__ = []
 
 
 class _SpecialTypeTags(SimpleNamespace):
+    """
+    Defines the type tags for special types.
+    """
     LIST = 'builtins.list'
     DICT = 'builtins.dict'
     NUMBER = 'builtins.number'
     STR = 'builtins.str'
+    NONE = 'builtins.none'
 
 
 @subscribe_hdf5(_SpecialTypeTags.DICT)
@@ -58,6 +62,15 @@ class _ValueDeserializer(Deserializable):
     @classmethod
     def from_hdf5(cls, hdf5_handle):
         return hdf5_handle['value'].value
+
+
+@subscribe_hdf5(_SpecialTypeTags.NONE)
+class _NoneDeserializer(Deserializable):
+    """Helper class to de-serialize ``None``."""
+
+    @classmethod
+    def from_hdf5(cls, hdf5_handle):
+        return None
 
 
 def add_type_tag(tag):
@@ -100,6 +113,12 @@ def _(obj, hdf5_handle):
 @add_type_tag(_SpecialTypeTags.STR)
 def _(obj, hdf5_handle):
     _value_serializer(obj, hdf5_handle)
+
+
+@to_hdf5_singledispatch.register(type(None))
+@add_type_tag(_SpecialTypeTags.NONE)
+def _(obj, hdf5_handle):
+    pass
 
 
 def _value_serializer(obj, hdf5_handle):
