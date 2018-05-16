@@ -112,7 +112,8 @@ def test_dict(check_save_load):  # pylint: disable=redefined-outer-name
     x = {
         'a': SimpleClass(4),
         'b': [SimpleClass(1), SimpleClass(10)],
-        SimpleClass(2): 4
+        SimpleClass(2): 4,
+        (1, 2, 3): 5
     }
     check_save_load(x)
 
