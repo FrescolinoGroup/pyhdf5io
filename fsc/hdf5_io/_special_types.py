@@ -20,6 +20,7 @@ class _SpecialTypeTags(SimpleNamespace):
     Defines the type tags for special types.
     """
     LIST = 'builtins.list'
+    TUPLE = 'builtins.tuple'
     DICT = 'builtins.dict'
     NUMBER = 'builtins.number'
     STR = 'builtins.str'
@@ -50,10 +51,21 @@ class _ListDeserializer(Deserializable):
 
     @classmethod
     def from_hdf5(cls, hdf5_handle):
-        int_keys = [key for key in hdf5_handle if key != TYPE_TAG_KEY]
-        return [
-            from_hdf5(hdf5_handle[key]) for key in sorted(int_keys, key=int)
-        ]
+        return _deserialize_iterable(hdf5_handle)
+
+
+@subscribe_hdf5(_SpecialTypeTags.TUPLE)
+class _TupleDeserializer(Deserializable):
+    """Helper class to de-serialize tuple objects."""
+
+    @classmethod
+    def from_hdf5(cls, hdf5_handle):
+        return tuple(_deserialize_iterable(hdf5_handle))
+
+
+def _deserialize_iterable(hdf5_handle):
+    int_keys = [key for key in hdf5_handle if key != TYPE_TAG_KEY]
+    return [from_hdf5(hdf5_handle[key]) for key in sorted(int_keys, key=int)]
 
 
 @subscribe_hdf5(_SpecialTypeTags.NUMBER, extra_tags=(_SpecialTypeTags.STR, ))
@@ -91,7 +103,17 @@ def add_type_tag(tag):
 
 @to_hdf5_singledispatch.register(Iterable)
 @add_type_tag(_SpecialTypeTags.LIST)
-def _(obj, hdf5_handle):  # pylint: disable=missing-docstring
+def _(obj, hdf5_handle):
+    _serialize_iterable(obj, hdf5_handle)
+
+
+@to_hdf5_singledispatch.register(tuple)
+@add_type_tag(_SpecialTypeTags.TUPLE)
+def _(obj, hdf5_handle):
+    _serialize_iterable(obj, hdf5_handle)
+
+
+def _serialize_iterable(obj, hdf5_handle):
     for i, part in enumerate(obj):
         sub_group = hdf5_handle.create_group(str(i))
         to_hdf5(part, sub_group)
