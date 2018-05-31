@@ -36,7 +36,7 @@ setup(
     install_requires=['numpy', 'decorator', 'h5py', 'fsc.export'],
     extras_require={
         'dev':
-        ['pytest', 'pytest-cov', 'yapf==0.20.2', 'prospector', 'pre-commit', 'sphinx', 'sphinx-rtd-theme', 'ipython>=6.2', 'matplotlib']
+        ['pytest', 'pytest-cov', 'yapf==0.20.2', 'prospector', 'pre-commit', 'pylint', 'sphinx', 'sphinx-rtd-theme', 'ipython>=6.2', 'matplotlib']
     },
     long_description=README,
     classifiers=[ # yapf: disable
