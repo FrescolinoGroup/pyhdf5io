@@ -38,18 +38,20 @@ def subscribe_hdf5(type_tag, extra_tags=(), check_on_load=True):
         if hasattr(cls, 'to_hdf5'):
 
             @decorator
-            def set_type_tag(to_hdf5_func, self, hdf5_handle):
+            def set_type_tag(to_hdf5_func, self, hdf5_handle, *args, **kwargs):
                 hdf5_handle[TYPE_TAG_KEY] = type_tag
-                return to_hdf5_func(self, hdf5_handle)
+                return to_hdf5_func(self, hdf5_handle, *args, **kwargs)
 
             cls.to_hdf5 = set_type_tag(cls.to_hdf5)  # pylint: disable=no-value-for-parameter
 
         if check_on_load:
 
             @decorator
-            def check_type_tag(from_hdf5_func, cls, hdf5_handle, **kwargs):
+            def check_type_tag(  # pylint: disable=missing-docstring
+                from_hdf5_func, cls, hdf5_handle, *args, **kwargs
+            ):
                 assert hdf5_handle[TYPE_TAG_KEY].value in all_type_tags
-                return from_hdf5_func(cls, hdf5_handle, **kwargs)
+                return from_hdf5_func(cls, hdf5_handle, *args, **kwargs)
 
             cls.from_hdf5 = classmethod(check_type_tag(cls.from_hdf5.__func__))  # pylint: disable=no-value-for-parameter
         else:
