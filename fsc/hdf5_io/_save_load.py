@@ -47,9 +47,9 @@ def to_hdf5(obj, hdf5_handle):
     :param hdf5_handle: HDF5 location where the serialized object gets stored.
     :type hdf5_handle: :py:class:`h5py.File<File>` or :py:class:`h5py.Group<Group>`.
     """
-    try:
+    if hasattr(obj, 'to_hdf5'):
         obj.to_hdf5(hdf5_handle)
-    except AttributeError:
+    else:
         to_hdf5_singledispatch(obj, hdf5_handle)
 
 
