@@ -51,10 +51,12 @@ def subscribe_hdf5(type_tag, extra_tags=(), check_on_load=True):
 
             @decorator
             def check_type_tag(  # pylint: disable=missing-docstring
-                from_hdf5_func, cls, hdf5_handle, *args, **kwargs
+                from_hdf5_func, curr_cls, hdf5_handle, *args, **kwargs
             ):
-                assert hdf5_handle[TYPE_TAG_KEY].value in all_type_tags
-                return from_hdf5_func(cls, hdf5_handle, *args, **kwargs)
+                # check only the top-level class.
+                if curr_cls == cls:
+                    assert hdf5_handle[TYPE_TAG_KEY].value in all_type_tags
+                return from_hdf5_func(curr_cls, hdf5_handle, *args, **kwargs)
 
             cls.from_hdf5 = classmethod(check_type_tag(cls.from_hdf5.__func__))  # pylint: disable=no-value-for-parameter
         else:
