@@ -81,13 +81,12 @@ class SimpleHDF5Mapping(HDF5Enabled):
 
     @classmethod
     def from_hdf5(cls, hdf5_handle):
-        return cls(
-            **{
-                key: _global_from_hdf5(hdf5_handle[key])
-                for key in cls.OBJECT_ATTRIBUTES
-            }, **{key: hdf5_handle[key].value
-                  for key in cls.VALUE_ATTRIBUTES}
-        )
+        kwargs = dict()
+        for key in cls.OBJECT_ATTRIBUTES:
+            kwargs[key] = _global_from_hdf5(hdf5_handle[key])
+        for key in cls.VALUE_ATTRIBUTES:
+            kwargs[key] = hdf5_handle[key].value
+        return cls(**kwargs)
 
     def to_hdf5(self, hdf5_handle):
         for key in self.OBJECT_ATTRIBUTES:
