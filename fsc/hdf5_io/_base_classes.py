@@ -76,20 +76,22 @@ class SimpleHDF5Mapping(HDF5Enabled):
     a separate group and serialized / deserialized via ``to_hdf5`` / ``from_hdf5``,
     and the latter are simply assigned to a key and retrieved via ``.value``.
     """
-    OBJECT_ATTRIBUTES = []
-    VALUE_ATTRIBUTES = []
+    HDF5_ATTRIBUTES = ()
 
     @classmethod
     def from_hdf5(cls, hdf5_handle):
         kwargs = dict()
-        for key in cls.OBJECT_ATTRIBUTES:
-            kwargs[key] = _global_from_hdf5(hdf5_handle[key])
-        for key in cls.VALUE_ATTRIBUTES:
-            kwargs[key] = hdf5_handle[key].value
+        for key in cls.HDF5_ATTRIBUTES:
+            try:
+                kwargs[key] = hdf5_handle[key].value
+            except AttributeError:
+                kwargs[key] = _global_from_hdf5(hdf5_handle[key])
         return cls(**kwargs)
 
     def to_hdf5(self, hdf5_handle):
-        for key in self.OBJECT_ATTRIBUTES:
-            _global_to_hdf5(getattr(self, key), hdf5_handle.create_group(key))
-        for key in self.VALUE_ATTRIBUTES:
-            hdf5_handle[key] = getattr(self, key)
+        for key in self.HDF5_ATTRIBUTES:
+            value = getattr(self, key)
+            try:
+                hdf5_handle[key] = value
+            except TypeError:
+                _global_to_hdf5(value, hdf5_handle.create_group(key))

@@ -38,8 +38,7 @@ class AutoClass(SimpleHDF5Mapping):
     """
     Class which uses the automatic serialization.
     """
-    VALUE_ATTRIBUTES = ['x']
-    OBJECT_ATTRIBUTES = ['y']
+    HDF5_ATTRIBUTES = ['x', 'y']
 
     def __init__(self, x, y):
         self.x = x
@@ -54,7 +53,7 @@ class AutoClassChild(AutoClass):
     """
     Class which inherits from a class using the automatic serialization feature.
     """
-    OBJECT_ATTRIBUTES = AutoClass.OBJECT_ATTRIBUTES + ['z']
+    HDF5_ATTRIBUTES = AutoClass.HDF5_ATTRIBUTES + ['z']
 
     def __init__(self, x, y, z):
         super().__init__(x, y)
