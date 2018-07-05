@@ -79,9 +79,9 @@ You can also save and load lists or dictionaries containing Sneks:
 
 A common use case is to serialize all the attributes of an object, a base
 class :class:`.SimpleHDF5Mapping` exists for this case. A subclass needs to
-define two lists ``OBJECT_ATTRIBUTES`` and ``VALUE_ATTRIBUTES``, where the former
-are serialized to a new HDF5 and passed through the ``fsc.hdf5-io`` machinery,
-while the latter are directly assigned to the attribute name.
+define a lists ``HDF5_ATTRIBUTES`` of attributes that should be serialized.
+The attribute names must be the same as the arguments accepted by the
+constructor.
 
 We can re-write the ``Snek`` as
 
@@ -91,7 +91,7 @@ We can re-write the ``Snek`` as
 
     In [0]: @subscribe_hdf5('my_snek_module.simplified_snek')
        ...: class SimplifiedHDF5Snek(Snek, SimpleHDF5Mapping):
-       ...:     VALUE_ATTRIBUTES = ['length']
+       ...:     HDF5_ATTRIBUTES = ['length']
 
     In [0]: new_snek = SimplifiedHDF5Snek(9)
 
@@ -101,14 +101,13 @@ We can re-write the ``Snek`` as
 
     In [0]: new_snek_clone
 
-We can extend the Snek functionality by adding a list of friends, which are
-serialized as object attribute.
+We can extend the Snek functionality by adding a list of friends:
 
 .. ipython::
 
     In [0]: @subscribe_hdf5('my_snek_module.snek_with_friends')
        ...: class SnekWithFriends(SimplifiedHDF5Snek):
-       ...:     OBJECT_ATTRIBUTES = ['friends']
+       ...:     HDF5_ATTRIBUTES = ['length', 'friends']
        ...:     def __init__(self, length, friends):
        ...:         super().__init__(length)
        ...:         self.friends = friends

@@ -71,10 +71,9 @@ class SimpleHDF5Mapping(HDF5Enabled):
     """
     Base class for data classes which simply map their member to HDF5 values / groups.
 
-    The child class needs to define two lists ``OBJECT_ATTRIBUTES`` and
-    ``VALUE_ATTRIBUTES``, where the former are attributes which are given
-    a separate group and serialized / deserialized via ``to_hdf5`` / ``from_hdf5``,
-    and the latter are simply assigned to a key and retrieved via ``.value``.
+    The child class needs to define a list ``HDF5_ATTRIBUTES`` of attributes which
+    should be serialized. The name of the attributes must correspond to the
+    name accepted by the constructor.
     """
     HDF5_ATTRIBUTES = ()
 
