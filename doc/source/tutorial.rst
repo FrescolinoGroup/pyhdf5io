@@ -107,7 +107,7 @@ We can extend the Snek functionality by adding a list of friends:
 
     In [0]: @subscribe_hdf5('my_snek_module.snek_with_friends')
        ...: class SnekWithFriends(SimplifiedHDF5Snek):
-       ...:     HDF5_ATTRIBUTES = ['length', 'friends']
+       ...:     HDF5_ATTRIBUTES = SimplifiedHDF5Snek.HDF5_ATTRIBUTES + ['friends']
        ...:     def __init__(self, length, friends):
        ...:         super().__init__(length)
        ...:         self.friends = friends
