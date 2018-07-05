@@ -8,6 +8,7 @@ from ._save_load import *
 from ._base_classes import *
 from ._subscribe import *
 # Needs to be loaded on import to define the special type serialization.
+from ._simple_mapping import *
 from ._special_types import *
 
-__all__ = _save_load.__all__ + _base_classes.__all__ + _subscribe.__all__  # pylint: disable=undefined-variable
+__all__ = _save_load.__all__ + _base_classes.__all__ + _subscribe.__all__ + _simple_mapping.__all__  # pylint: disable=undefined-variable

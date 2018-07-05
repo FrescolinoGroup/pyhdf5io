@@ -75,3 +75,53 @@ You can also save and load lists or dictionaries containing Sneks:
        ...:     snek_2, snek_4 = load(f.name)
 
     In [0]: print(snek_2, snek_4)
+
+
+A common use case is to serialize all the attributes of an object, a base
+class :class:`.SimpleHDF5Mapping` exists for this case. A subclass needs to
+define a lists ``HDF5_ATTRIBUTES`` of attributes that should be serialized.
+The attribute names must be the same as the arguments accepted by the
+constructor.
+
+We can re-write the ``Snek`` as
+
+.. ipython::
+
+    In [0]: from fsc.hdf5_io import SimpleHDF5Mapping
+
+    In [0]: @subscribe_hdf5('my_snek_module.simplified_snek')
+       ...: class SimplifiedHDF5Snek(Snek, SimpleHDF5Mapping):
+       ...:     HDF5_ATTRIBUTES = ['length']
+
+    In [0]: new_snek = SimplifiedHDF5Snek(9)
+
+    In [0]: with NamedTemporaryFile() as f:
+       ...:     save(new_snek, f.name)
+       ...:     new_snek_clone = load(f.name)
+
+    In [0]: new_snek_clone
+
+We can extend the Snek functionality by adding a list of friends:
+
+.. ipython::
+
+    In [0]: @subscribe_hdf5('my_snek_module.snek_with_friends')
+       ...: class SnekWithFriends(SimplifiedHDF5Snek):
+       ...:     HDF5_ATTRIBUTES = SimplifiedHDF5Snek.HDF5_ATTRIBUTES + ['friends']
+       ...:     def __init__(self, length, friends):
+       ...:         super().__init__(length)
+       ...:         self.friends = friends
+
+    In [0]: snek_with_friends = SnekWithFriends(3, friends=[mysnek, new_snek])
+
+    In [0]: snek_with_friends
+
+    In [0]: snek_with_friends.friends
+
+    In [0]: with NamedTemporaryFile() as f:
+       ...:     save(snek_with_friends, f.name)
+       ...:     snek_with_friends_clone = load(f.name)
+
+    In [0]: snek_with_friends_clone
+
+    In [0]: snek_with_friends_clone.friends

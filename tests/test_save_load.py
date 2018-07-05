@@ -10,7 +10,7 @@ import numpy as np
 
 from fsc.hdf5_io import save, load
 
-from simple_class import SimpleClass, LegacyClass
+from simple_class import SimpleClass, LegacyClass, AutoClass, AutoClassChild
 
 
 @pytest.fixture(params=['tempfile', 'permanent'])
@@ -123,6 +123,26 @@ def test_none(check_save_load):  # pylint: disable=redefined-outer-name
     Test NoneType serialization.
     """
     check_save_load(None)
+
+
+def test_auto_class(check_save_load):  # pylint: disable=redefined-outer-name
+    """
+    Test serialization using the ``SimpleHDF5Mapping``.
+    """
+    check_save_load(AutoClass(x=2., y=[1, 2., 3., SimpleClass(3)]))
+
+
+def test_auto_class_child(check_save_load):  # pylint: disable=redefined-outer-name
+    """
+    Test serialization using the ``SimpleHDF5Mapping`` with inheritance.
+    """
+    from fsc.hdf5_io._subscribe import SERIALIZE_MAPPING
+    print(SERIALIZE_MAPPING)
+    check_save_load(
+        AutoClassChild(
+            x=2., y=[1, 2., 3., SimpleClass(3)], z=AutoClass(x=1., y=[3])
+        )
+    )
 
 
 def test_load_old_dict(sample):
