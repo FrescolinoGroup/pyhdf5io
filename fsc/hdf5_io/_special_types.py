@@ -91,7 +91,7 @@ def add_type_tag(tag):
     Decorator which adds the given type tag when creating the HDF5 object.
     """
 
-    def outer(func):  # pylint: disable=missing-docstring
+    def outer(func):
         def inner(obj, hdf5_handle):
             hdf5_handle[TYPE_TAG_KEY] = tag
             func(obj, hdf5_handle)

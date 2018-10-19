@@ -24,15 +24,15 @@ def from_hdf5(hdf5_handle):
         type_tag = hdf5_handle[TYPE_TAG_KEY].value
     except KeyError as err:
         raise ValueError(
-            "HDF5 object '{}' cannot be de-serialized: No type information given.".
-            format(hdf5_handle.name)
+            "HDF5 object '{}' cannot be de-serialized: No type information given."
+            .format(hdf5_handle.name)
         ) from err
     try:
         obj_class = SERIALIZE_MAPPING[type_tag]
     except KeyError as err:
         raise KeyError(
-            "Unknown {} '{}'. The module defining this class needs to be imported before de-serializing the object.".
-            format(TYPE_TAG_KEY, type_tag)
+            "Unknown {} '{}'. The module defining this class needs to be imported before de-serializing the object."
+            .format(TYPE_TAG_KEY, type_tag)
         ) from err
     return obj_class.from_hdf5(hdf5_handle)
 
