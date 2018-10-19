@@ -18,20 +18,32 @@ class SimpleHDF5Mapping(HDF5Enabled):
     name accepted by the constructor.
     """
     HDF5_ATTRIBUTES = ()
+    HDF5_OPTIONAL = ()
 
     @classmethod
     def from_hdf5(cls, hdf5_handle):
         kwargs = dict()
         for key in cls.HDF5_ATTRIBUTES:
             try:
-                kwargs[key] = hdf5_handle[key].value
+                hdf5_obj = hdf5_handle[key]
+            except KeyError:
+                if key in cls.HDF5_OPTIONAL:
+                    continue
+                raise
+            try:
+                kwargs[key] = hdf5_obj.value
             except AttributeError:
-                kwargs[key] = _global_from_hdf5(hdf5_handle[key])
+                kwargs[key] = _global_from_hdf5(hdf5_obj)
         return cls(**kwargs)
 
     def to_hdf5(self, hdf5_handle):
         for key in self.HDF5_ATTRIBUTES:
-            value = getattr(self, key)
+            try:
+                value = getattr(self, key)
+            except AttributeError:
+                if key in self.HDF5_OPTIONAL:
+                    continue
+                raise
             try:
                 hdf5_handle[key] = value
             except TypeError:
