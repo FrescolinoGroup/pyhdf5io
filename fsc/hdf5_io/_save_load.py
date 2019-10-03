@@ -21,7 +21,7 @@ def from_hdf5(hdf5_handle):
     :type hdf5_handle: :py:class:`h5py.File<File>` or :py:class:`h5py.Group<Group>`.
     """
     try:
-        type_tag = hdf5_handle[TYPE_TAG_KEY].value
+        type_tag = hdf5_handle[TYPE_TAG_KEY][()]
     except KeyError as err:
         raise ValueError(
             "HDF5 object '{}' cannot be de-serialized: No type information given."
@@ -55,7 +55,7 @@ def to_hdf5(obj, hdf5_handle):
 
 @export
 @singledispatch
-def to_hdf5_singledispatch(obj, hdf5_handle):  # pylint: disable=unused-argument
+def to_hdf5_singledispatch(obj, hdf5_handle):
     """
     Singledispatch function which is called to serialize and object when it does not have a ``to_hdf5`` method.
 

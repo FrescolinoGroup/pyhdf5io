@@ -18,7 +18,6 @@ def check_save_load(request, test_name, sample):
     """
     Check that a given object remains the same when saved and loaded.
     """
-
     def inner_tempfile(x):
         with tempfile.NamedTemporaryFile() as named_file:
             save(x, named_file.name)
@@ -56,7 +55,7 @@ def test_file_method():
     """
     x = SimpleClass(6)
     with tempfile.NamedTemporaryFile() as named_file:
-        with h5py.File(named_file.name) as h5_file:
+        with h5py.File(named_file.name, 'r+') as h5_file:
             x.to_hdf5(h5_file)
             y = SimpleClass.from_hdf5(h5_file)
     assert x == y

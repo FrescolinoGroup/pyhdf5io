@@ -12,7 +12,6 @@ class SimpleClass(HDF5Enabled):
     """
     Simple class that implements the HDF5Enabled concept.
     """
-
     def __init__(self, x):
         self.x = int(x)
 
@@ -21,7 +20,7 @@ class SimpleClass(HDF5Enabled):
 
     @classmethod
     def from_hdf5(cls, hdf5_handle):
-        return cls(x=hdf5_handle['x'].value)
+        return cls(x=hdf5_handle['x'][()])
 
     def __eq__(self, other):
         return self.x == other.x
@@ -68,11 +67,10 @@ class LegacyClass(SimpleClass):
     """
     Class which accepts kwargs in 'from_hdf5', and should work without 'type_tag'.
     """
-
     def __init__(self, x, y=0.):
         super().__init__(x=x)
         self.y = float(y)
 
     @classmethod
     def from_hdf5(cls, hdf5_handle, **kwargs):  # pylint: disable=arguments-differ
-        return cls(x=hdf5_handle['x'].value, **kwargs)
+        return cls(x=hdf5_handle['x'][()], **kwargs)

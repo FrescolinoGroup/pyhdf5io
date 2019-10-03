@@ -24,7 +24,6 @@ def subscribe_hdf5(type_tag, extra_tags=(), check_on_load=True):
     :param check_on_load: Flag that determines whether the 'type_tag' is checked when de-serializing the object.
     :type check_on_load: bool
     """
-
     def inner(cls):
         all_type_tags = [type_tag] + list(extra_tags)
         for tag in all_type_tags:
@@ -55,7 +54,7 @@ def subscribe_hdf5(type_tag, extra_tags=(), check_on_load=True):
             ):
                 # check only the top-level class.
                 if curr_cls == cls:
-                    assert hdf5_handle[TYPE_TAG_KEY].value in all_type_tags
+                    assert hdf5_handle[TYPE_TAG_KEY][()] in all_type_tags
                 return from_hdf5_func(curr_cls, hdf5_handle, *args, **kwargs)
 
             cls.from_hdf5 = classmethod(check_type_tag(cls.from_hdf5.__func__))  # pylint: disable=no-value-for-parameter

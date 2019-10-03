@@ -31,7 +31,7 @@ class SimpleHDF5Mapping(HDF5Enabled):
                     continue
                 raise
             try:
-                kwargs[key] = hdf5_obj.value
+                kwargs[key] = hdf5_obj[()]
             except AttributeError:
                 kwargs[key] = _global_from_hdf5(hdf5_obj)
         return cls(**kwargs)

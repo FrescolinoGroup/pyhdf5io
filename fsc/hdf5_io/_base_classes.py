@@ -13,7 +13,6 @@ class Deserializable(abc.ABC):
     """
     Base class for data which can be deserialized from the HDF5 format.
     """
-
     @classmethod
     @abc.abstractmethod
     def from_hdf5(cls, hdf5_handle):
@@ -38,7 +37,6 @@ class Serializable(abc.ABC):
     """
     Base class for data which can be serialized to the HDF5 format.
     """
-
     @abc.abstractmethod
     def to_hdf5(self, hdf5_handle):
         """
@@ -62,4 +60,3 @@ class HDF5Enabled(Serializable, Deserializable):
     """
     Base class for data which can be serialized to and deserialized from HDF5.
     """
-    pass
