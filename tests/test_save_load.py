@@ -56,7 +56,7 @@ def test_file_method():
     """
     x = SimpleClass(6)
     with tempfile.NamedTemporaryFile() as named_file:
-        with h5py.File(named_file.name) as h5_file:
+        with h5py.File(named_file.name, 'r+') as h5_file:
             x.to_hdf5(h5_file)
             y = SimpleClass.from_hdf5(h5_file)
     assert x == y

@@ -21,7 +21,7 @@ class SimpleClass(HDF5Enabled):
 
     @classmethod
     def from_hdf5(cls, hdf5_handle):
-        return cls(x=hdf5_handle['x'].value)
+        return cls(x=hdf5_handle['x'][()])
 
     def __eq__(self, other):
         return self.x == other.x
@@ -75,4 +75,4 @@ class LegacyClass(SimpleClass):
 
     @classmethod
     def from_hdf5(cls, hdf5_handle, **kwargs):  # pylint: disable=arguments-differ
-        return cls(x=hdf5_handle['x'].value, **kwargs)
+        return cls(x=hdf5_handle['x'][()], **kwargs)

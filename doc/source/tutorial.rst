@@ -42,7 +42,7 @@ Finally, the :func:`.subscribe_hdf5` class decorator is used to define a unique 
        ...:         hdf5_handle['length'] = self.length
        ...:     @classmethod
        ...:     def from_hdf5(cls, hdf5_handle):
-       ...:         return cls(hdf5_handle['length'].value)
+       ...:         return cls(hdf5_handle['length'][()])
        ...:
 
     In [0]: HDF5Snek(12)

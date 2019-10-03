@@ -21,7 +21,7 @@ def from_hdf5(hdf5_handle):
     :type hdf5_handle: :py:class:`h5py.File<File>` or :py:class:`h5py.Group<Group>`.
     """
     try:
-        type_tag = hdf5_handle[TYPE_TAG_KEY].value
+        type_tag = hdf5_handle[TYPE_TAG_KEY][()]
     except KeyError as err:
         raise ValueError(
             "HDF5 object '{}' cannot be de-serialized: No type information given."

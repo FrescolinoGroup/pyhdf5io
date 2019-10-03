@@ -75,7 +75,7 @@ class _ValueDeserializer(Deserializable):
 
     @classmethod
     def from_hdf5(cls, hdf5_handle):
-        return hdf5_handle['value'].value
+        return hdf5_handle['value'][()]
 
 
 @subscribe_hdf5(_SpecialTypeTags.NONE)
@@ -94,7 +94,7 @@ class _SympyDeserializer(Deserializable):
     @classmethod
     def from_hdf5(cls, hdf5_handle):
         import sympy  # pylint: disable=redefined-outer-name
-        return sympy.sympify(hdf5_handle['value'].value)
+        return sympy.sympify(hdf5_handle['value'][()])
 
 
 def add_type_tag(tag):
