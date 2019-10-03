@@ -55,7 +55,7 @@ def to_hdf5(obj, hdf5_handle):
 
 @export
 @singledispatch
-def to_hdf5_singledispatch(obj, hdf5_handle):  # pylint: disable=unused-argument
+def to_hdf5_singledispatch(obj, hdf5_handle):
     """
     Singledispatch function which is called to serialize and object when it does not have a ``to_hdf5`` method.
 

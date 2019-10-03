@@ -31,7 +31,6 @@ class _SpecialTypeTags(SimpleNamespace):
 @subscribe_hdf5(_SpecialTypeTags.DICT)
 class _DictDeserializer(Deserializable):
     """Helper class to de-serialize dict objects."""
-
     @classmethod
     def from_hdf5(cls, hdf5_handle):
         try:
@@ -49,7 +48,6 @@ class _DictDeserializer(Deserializable):
 @subscribe_hdf5(_SpecialTypeTags.LIST)
 class _ListDeserializer(Deserializable):
     """Helper class to de-serialize list objects."""
-
     @classmethod
     def from_hdf5(cls, hdf5_handle):
         return _deserialize_iterable(hdf5_handle)
@@ -58,7 +56,6 @@ class _ListDeserializer(Deserializable):
 @subscribe_hdf5(_SpecialTypeTags.TUPLE)
 class _TupleDeserializer(Deserializable):
     """Helper class to de-serialize tuple objects."""
-
     @classmethod
     def from_hdf5(cls, hdf5_handle):
         return tuple(_deserialize_iterable(hdf5_handle))
@@ -72,7 +69,6 @@ def _deserialize_iterable(hdf5_handle):
 @subscribe_hdf5(_SpecialTypeTags.NUMBER, extra_tags=(_SpecialTypeTags.STR, ))
 class _ValueDeserializer(Deserializable):
     """Helper class to de-serialize numbers and strings objects."""
-
     @classmethod
     def from_hdf5(cls, hdf5_handle):
         return hdf5_handle['value'][()]
@@ -81,7 +77,6 @@ class _ValueDeserializer(Deserializable):
 @subscribe_hdf5(_SpecialTypeTags.NONE)
 class _NoneDeserializer(Deserializable):
     """Helper class to de-serialize ``None``."""
-
     @classmethod
     def from_hdf5(cls, hdf5_handle):
         return None
@@ -90,7 +85,6 @@ class _NoneDeserializer(Deserializable):
 @subscribe_hdf5(_SpecialTypeTags.SYMPY)
 class _SympyDeserializer(Deserializable):
     """Helper class to de-serialize sympy objects."""
-
     @classmethod
     def from_hdf5(cls, hdf5_handle):
         import sympy  # pylint: disable=redefined-outer-name
@@ -101,7 +95,6 @@ def add_type_tag(tag):
     """
     Decorator which adds the given type tag when creating the HDF5 object.
     """
-
     def outer(func):
         def inner(obj, hdf5_handle):
             hdf5_handle[TYPE_TAG_KEY] = tag

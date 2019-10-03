@@ -18,7 +18,6 @@ def check_save_load(request, test_name, sample):
     """
     Check that a given object remains the same when saved and loaded.
     """
-
     def inner_tempfile(x):
         with tempfile.NamedTemporaryFile() as named_file:
             save(x, named_file.name)

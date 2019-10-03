@@ -24,7 +24,6 @@ def subscribe_hdf5(type_tag, extra_tags=(), check_on_load=True):
     :param check_on_load: Flag that determines whether the 'type_tag' is checked when de-serializing the object.
     :type check_on_load: bool
     """
-
     def inner(cls):
         all_type_tags = [type_tag] + list(extra_tags)
         for tag in all_type_tags:
