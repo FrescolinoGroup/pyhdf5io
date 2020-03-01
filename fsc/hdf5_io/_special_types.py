@@ -25,7 +25,7 @@ class _SpecialTypeTags(SimpleNamespace):
     NUMBER = 'builtins.number'
     STR = 'builtins.str'
     NONE = 'builtins.none'
-    SYMPY = 'sympy.object'
+    SYMPY = 'sympy.object'  # defined in _sympy_load.py and _sympy_save.py
 
 
 @subscribe_hdf5(_SpecialTypeTags.DICT)
@@ -82,15 +82,6 @@ class _NoneDeserializer(Deserializable):
         return None
 
 
-@subscribe_hdf5(_SpecialTypeTags.SYMPY)
-class _SympyDeserializer(Deserializable):
-    """Helper class to de-serialize sympy objects."""
-    @classmethod
-    def from_hdf5(cls, hdf5_handle):
-        import sympy  # pylint: disable=redefined-outer-name
-        return sympy.sympify(hdf5_handle['value'][()])
-
-
 def add_type_tag(tag):
     """
     Decorator which adds the given type tag when creating the HDF5 object.
@@ -145,19 +136,6 @@ def _(obj, hdf5_handle):
 @to_hdf5_singledispatch.register(type(None))
 @add_type_tag(_SpecialTypeTags.NONE)
 def _(obj, hdf5_handle):
-    pass
-
-
-try:
-    import sympy
-
-    @to_hdf5_singledispatch.register(sympy.MatrixBase)
-    @to_hdf5_singledispatch.register(sympy.Basic)
-    @add_type_tag(_SpecialTypeTags.SYMPY)
-    def _(obj, hdf5_handle):
-        _value_serializer(sympy.srepr(obj), hdf5_handle)
-
-except ImportError:
     pass
 
 

@@ -20,8 +20,8 @@ except IOError:
 with open('version.txt', 'r') as f:
     VERSION = f.read().strip()
 
-if sys.version_info < (3, ):
-    raise ValueError('only Python 3.x and higher are supported')
+if sys.version_info < (3, 5):
+    raise ValueError('only Python 3.5 and higher are supported')
 
 setup(
     name=PKGNAME_QUALIFIED,
@@ -34,15 +34,22 @@ setup(
     author_email='frescolino@lists.phys.ethz.ch',
     description=DESCRIPTION,
     install_requires=['numpy', 'decorator', 'h5py', 'fsc.export'],
+    python_requires=">=3.5",
     extras_require={
-        'dev':
-        ['pytest', 'pytest-cov', 'yapf==0.28.0', 'prospector==1.1.7', 'pre-commit', 'pylint==2.3.1', 'sphinx', 'sphinx-rtd-theme', 'ipython>=6.2', 'matplotlib', 'sympy']
+        'dev': [
+            'pytest', 'pytest-cov', 'yapf==0.28.0', 'prospector==1.1.7',
+            'pre-commit', 'pylint==2.3.1', 'sphinx', 'sphinx-rtd-theme',
+            'ipython>=6.2', 'matplotlib', 'sympy'
+        ]
+    },
+    entry_points={
+        "fsc.hdf5_io.load": ["sympy.object = fsc.hdf5_io._sympy_load"],
+        "fsc.hdf5_io.save": ["sympy = fsc.hdf5_io._sympy_save"]
     },
     long_description=README,
-    classifiers=[ # yapf: disable
+    classifiers=[
         'License :: OSI Approved :: Apache Software License',
-        'Programming Language :: Python :: 3',
-        'Topic :: Utilities'
+        'Programming Language :: Python :: 3', 'Topic :: Utilities'
     ],
     license='Apache',
 )
