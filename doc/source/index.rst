@@ -9,6 +9,7 @@ Tutorial, Examples and Documentation
     :maxdepth: 2
 
     tutorial.rst
+    entrypoints.rst
     documentation.rst
 
 Indices and tables
