@@ -6,7 +6,7 @@ The (de-)serialization methods registered with ``fsc.hdf5-io`` are only availabl
 Serialization: ``fsc.hdf5_io.save``
 -----------------------------------
 
-When a Python object whose serialization is not defined is encountered, ``fsc.hdf5-io`` will load (if it exists) the entry point corresponding to the full name of the object's class in the ``fsc.hdf5_io.save`` entrypoint. If there is no entry point for the _exact_ Python name, it will also try its module name(s).
+When a Python object whose serialization is not defined is encountered, ``fsc.hdf5-io`` will load (if it exists) the entry point corresponding to the full name of the object's class in the ``fsc.hdf5_io.save`` entrypoint. If there is no entry point for the *exact* Python name, it will also try its module name(s).
 
 For example, if a ``scipy.sparse.csr.csr_matrix`` should be serialized, it will first check for an entry point named ``scipy.sparse.csr.csr_matrix`` in ``fsc.hdf5_io.save``. If this entry point does not exist, it will try ``scipy.sparse.csr``, ``scipy.sparse``, and ``scipy``, stopping at the first entry point that exists.
 
@@ -31,7 +31,7 @@ If the top-level import of ``your_module`` loads all the submodules needed to de
         'fsc.hdf5_io.load': ['your_module = your_module']
     }
 
-If instead they are in two separate submodules ``some_object_submodule`` and ``another_object_submodule`` that are _not_ loaded when simply importing ``your_module``, you need to define two entry points:
+If instead they are in two separate submodules ``some_object_submodule`` and ``another_object_submodule`` that are *not* loaded when simply importing ``your_module``, you need to define two entry points:
 
 .. code :: python
 
