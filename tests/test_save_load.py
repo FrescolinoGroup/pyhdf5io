@@ -166,7 +166,8 @@ def test_legacyclass_notag(sample):
     'obj', [
         np.array([[1, 2, 3], [4, 5, 6]]),
         np.array([1, 2., None, 'foo'], dtype=object),
-        np.array(['foo', 'bar', 'baz']), (np.array(['foo', 'bar', 'baz']), )
+        np.array(['foo', 'bar', 'baz']), (np.array(['foo', 'bar', 'baz']), ),
+        np.array([[1, 2], [4, 5]], dtype=[('age', 'i4'), ('weight', 'f4')])
     ]
 )
 def test_numpy_array(check_save_load, obj):  # pylint: disable=redefined-outer-name
