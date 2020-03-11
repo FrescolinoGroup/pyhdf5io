@@ -15,6 +15,7 @@ matrix:
 install:
   - pip install .
   - pip install codecov
+  - pip install pytest-cov
 script:
   - if [ "$TEST_TYPE" == "compliance" ] ; then pip install .[dev]; pre-commit run --all-files ; fi
   - if [ "$TEST_TYPE" == "test" ] ; pytest --cov=fsc.hdf5_io --cov-config=.coveragerc ; fi
