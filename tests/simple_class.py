@@ -85,6 +85,31 @@ class AutoClassChild(AutoClass):
         return super().__eq__(other) and self.z == other.z
 
 
+@subscribe_hdf5('test.invalid_attribute_keys')
+class InvalidAttributeKeyType(SimpleHDF5Mapping):
+    """
+    SimpleHDF5Mapping with wrongly-typed HDF5_ATTRIBUTES.
+    """
+    HDF5_ATTRIBUTES = [1, None]
+
+
+@subscribe_hdf5('test.invalid_optional_keys')
+class InvalidOptionalKeyType(SimpleHDF5Mapping):
+    """
+    SimpleHDF5Mapping with wrongly-typed HDF5_OPTIONAL.
+    """
+    HDF5_OPTIONAL = [1, None]
+
+
+@subscribe_hdf5('test.clashing_keys')
+class ClashingKeys(SimpleHDF5Mapping):
+    """
+    SimpleHDF5Mapping with clashing HDF5_ATTRIBUTES and HDF5_OPTIONAL
+    """
+    HDF5_ATTRIBUTES = ['a', 'b', 'c']
+    HDF5_OPTIONAL = ['b', 'c', 'd']
+
+
 @subscribe_hdf5('test.legacy_class', check_on_load=False)
 class LegacyClass(SimpleClass):
     """

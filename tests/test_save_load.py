@@ -12,7 +12,10 @@ from numpy.testing import assert_equal
 
 from fsc.hdf5_io import save, load
 
-from simple_class import SimpleClass, LegacyClass, AutoClass, AutoClassChild, AutoClassWithOptional
+from simple_class import (
+    SimpleClass, LegacyClass, AutoClass, AutoClassChild, AutoClassWithOptional,
+    InvalidAttributeKeyType, InvalidOptionalKeyType, ClashingKeys
+)
 
 
 @pytest.fixture(params=['tempfile', 'permanent'])
@@ -210,3 +213,19 @@ def test_inexistent_tag(sample, filename):
     filename_full = sample(os.path.join('invalid', filename))
     with pytest.raises(KeyError):
         load(filename_full)
+
+
+@pytest.mark.parametrize(
+    'obj',
+    [InvalidAttributeKeyType(),
+     InvalidOptionalKeyType(),
+     ClashingKeys()]
+)
+def test_incorrect_key_check(obj):
+    """
+    Test that the HDF5_ATTRIBUTES and HDF5_OPTIONAL attributes are
+    checked for consistency upon saving.
+    """
+    with tempfile.NamedTemporaryFile() as tmpf:
+        with pytest.raises(ValueError):
+            save(obj, tmpf.name)
