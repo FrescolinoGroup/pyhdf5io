@@ -33,7 +33,7 @@ setup(
     author='C. Frescolino',
     author_email='frescolino@lists.phys.ethz.ch',
     description=DESCRIPTION,
-    install_requires=['numpy', 'decorator', 'h5py', 'fsc.export'],
+    install_requires=['numpy', 'decorator', 'h5py', 'numpy', 'fsc.export'],
     python_requires=">=3.5",
     extras_require={
         'dev': [

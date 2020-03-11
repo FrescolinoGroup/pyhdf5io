@@ -7,6 +7,8 @@ from numbers import Complex
 from functools import singledispatch
 from collections.abc import Iterable, Mapping, Hashable
 
+import numpy as np
+
 from ._base_classes import Deserializable
 
 from ._save_load import from_hdf5, to_hdf5, to_hdf5_singledispatch
@@ -25,6 +27,7 @@ class _SpecialTypeTags(SimpleNamespace):
     NUMBER = 'builtins.number'
     STR = 'builtins.str'
     NONE = 'builtins.none'
+    NUMPY_ARRAY = 'numpy.ndarray'
     SYMPY = 'sympy.object'  # defined in _sympy_load.py and _sympy_save.py
 
 
@@ -72,6 +75,16 @@ class _ValueDeserializer(Deserializable):
     @classmethod
     def from_hdf5(cls, hdf5_handle):
         return hdf5_handle['value'][()]
+
+
+@subscribe_hdf5(_SpecialTypeTags.NUMPY_ARRAY)
+class _NumpyArraryDeserializer(Deserializable):
+    """Helper class to de-serialize numpy arrays."""
+    @classmethod
+    def from_hdf5(cls, hdf5_handle):
+        if 'value' in hdf5_handle:
+            return hdf5_handle['value'][()]
+        return np.array(_deserialize_iterable(hdf5_handle))
 
 
 @subscribe_hdf5(_SpecialTypeTags.NONE)
@@ -128,15 +141,27 @@ def _(obj, hdf5_handle):
 
 
 @to_hdf5_singledispatch.register(str)
+@to_hdf5_singledispatch.register(np.str_)
 @add_type_tag(_SpecialTypeTags.STR)
 def _(obj, hdf5_handle):
-    _value_serializer(obj, hdf5_handle)
+    _value_serializer(str(obj), hdf5_handle)
 
 
 @to_hdf5_singledispatch.register(type(None))
 @add_type_tag(_SpecialTypeTags.NONE)
 def _(obj, hdf5_handle):
     pass
+
+
+@to_hdf5_singledispatch.register(np.ndarray)
+@add_type_tag(_SpecialTypeTags.NUMPY_ARRAY)
+def _(obj, hdf5_handle):  # pylint: disable=missing-docstring
+    try:
+        _value_serializer(obj, hdf5_handle)
+    except TypeError:
+        # if the numpy dtype does not have a native HDF5 equivalent,
+        # treat it as an iterable instead
+        _serialize_iterable(obj, hdf5_handle)
 
 
 def _value_serializer(obj, hdf5_handle):

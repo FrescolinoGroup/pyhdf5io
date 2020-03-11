@@ -7,6 +7,7 @@ import tempfile
 import h5py
 import pytest
 import numpy as np
+from numpy.testing import assert_equal
 
 from fsc.hdf5_io import save, load
 
@@ -22,7 +23,7 @@ def check_save_load(request, test_name, sample):
         with tempfile.NamedTemporaryFile() as named_file:
             save(x, named_file.name)
             y = load(named_file.name)
-        assert x == y
+        assert_equal(x, y)
 
     def inner_permanent(x):
         """
@@ -31,7 +32,7 @@ def check_save_load(request, test_name, sample):
         file_name = sample((test_name + '.hdf5').replace('/', '_'))
         try:
             y = load(file_name)
-            assert x == y
+            assert_equal(x, y)
         except IOError:
             save(x, file_name)
             raise ValueError("Sample file did not exist")
@@ -159,3 +160,17 @@ def test_legacyclass_notag(sample):
     x = LegacyClass.from_hdf5_file(sample('no_tag.hdf5'), y=1.2)
     assert x.x == 10
     assert x.y == 1.2
+
+
+@pytest.mark.parametrize(
+    'obj', [
+        np.array([[1, 2, 3], [4, 5, 6]]),
+        np.array([1, 2., None, 'foo'], dtype=object),
+        np.array(['foo', 'bar', 'baz']), (np.array(['foo', 'bar', 'baz']), )
+    ]
+)
+def test_numpy_array(check_save_load, obj):  # pylint: disable=redefined-outer-name
+    """
+    Check save / load for numpy arrays
+    """
+    check_save_load(obj)
