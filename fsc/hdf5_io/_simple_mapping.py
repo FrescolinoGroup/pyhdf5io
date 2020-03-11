@@ -2,6 +2,8 @@
 Implements a base class for serializing a given list of attributes of an object.
 """
 
+import contextlib
+
 from fsc.export import export
 
 from ._base_classes import HDF5Enabled
@@ -23,13 +25,11 @@ class SimpleHDF5Mapping(HDF5Enabled):
     @classmethod
     def from_hdf5(cls, hdf5_handle):
         kwargs = dict()
-        for key in cls.HDF5_ATTRIBUTES:
-            try:
-                hdf5_obj = hdf5_handle[key]
-            except KeyError:
-                if key in cls.HDF5_OPTIONAL:
-                    continue
-                raise
+        to_deserialize = list(cls.HDF5_ATTRIBUTES) + [
+            key for key in cls.HDF5_OPTIONAL if key in hdf5_handle
+        ]
+        for key in to_deserialize:
+            hdf5_obj = hdf5_handle[key]
             try:
                 kwargs[key] = hdf5_obj[()]
             except AttributeError:
@@ -37,13 +37,12 @@ class SimpleHDF5Mapping(HDF5Enabled):
         return cls(**kwargs)
 
     def to_hdf5(self, hdf5_handle):
-        for key in self.HDF5_ATTRIBUTES:
-            try:
-                value = getattr(self, key)
-            except AttributeError:
-                if key in self.HDF5_OPTIONAL:
-                    continue
-                raise
+        to_serialize = [(key, getattr(self, key))
+                        for key in self.HDF5_ATTRIBUTES]
+        for key in self.HDF5_OPTIONAL:
+            with contextlib.suppress(AttributeError):
+                to_serialize.append((key, getattr(self, key)))
+        for key, value in to_serialize:
             try:
                 hdf5_handle[key] = value
             except TypeError:

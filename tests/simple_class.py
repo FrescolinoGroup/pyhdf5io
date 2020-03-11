@@ -47,6 +47,29 @@ class AutoClass(SimpleHDF5Mapping):
         return self.x == other.x and self.y == other.y
 
 
+@subscribe_hdf5('test.auto_class_with_optional')
+class AutoClassWithOptional(AutoClass):
+    """
+    Class which uses the automatic serialization, with optional attributes.
+    """
+    HDF5_ATTRIBUTES = ['x', 'y']
+    HDF5_OPTIONAL = ['z']
+
+    def __init__(self, x, y, z=None):
+        super().__init__(x=x, y=y)
+        if z is not None:
+            self.z = z
+
+    def __eq__(self, other):
+        if not super().__eq__(other):
+            return False
+        if hasattr(self, 'z') != hasattr(other, 'z'):
+            return False
+        if hasattr(self, 'z'):
+            return self.z == other.z
+        return True
+
+
 @subscribe_hdf5('test.auto_class_child')
 class AutoClassChild(AutoClass):
     """

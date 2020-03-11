@@ -2,6 +2,7 @@
 Tests for saving and loading a simple class.
 """
 
+import os
 import tempfile
 
 import h5py
@@ -11,7 +12,7 @@ from numpy.testing import assert_equal
 
 from fsc.hdf5_io import save, load
 
-from simple_class import SimpleClass, LegacyClass, AutoClass, AutoClassChild
+from simple_class import SimpleClass, LegacyClass, AutoClass, AutoClassChild, AutoClassWithOptional
 
 
 @pytest.fixture(params=['tempfile', 'permanent'])
@@ -132,6 +133,18 @@ def test_auto_class(check_save_load):  # pylint: disable=redefined-outer-name
     check_save_load(AutoClass(x=2., y=[1, 2., 3., SimpleClass(3)]))
 
 
+@pytest.mark.parametrize(
+    'obj',
+    [AutoClassWithOptional(x=1, y=2),
+     AutoClassWithOptional(x=1, y=2, z=3)]
+)
+def test_optional_attributes(check_save_load, obj):  # pylint: disable=redefined-outer-name
+    """
+    Test the ``SimpleHDF5Mapping`` with optional attributes.
+    """
+    check_save_load(obj)
+
+
 def test_auto_class_child(check_save_load):  # pylint: disable=redefined-outer-name
     """
     Test serialization using the ``SimpleHDF5Mapping`` with inheritance.
@@ -175,3 +188,25 @@ def test_numpy_array(check_save_load, obj):  # pylint: disable=redefined-outer-n
     Check save / load for numpy arrays
     """
     check_save_load(obj)
+
+
+def test_unhashable_dict_key(sample):
+    """
+    Test loading an invalid dictionary with keys that can not be made
+    hashable.
+    """
+    filename = sample(os.path.join('invalid', 'unhashable_dict_key.hdf5'))
+    with pytest.raises(ValueError):
+        load(filename)
+
+
+@pytest.mark.parametrize(
+    'filename', ['inexistent_tag.hdf5', 'inexistent_tag_with_entrypoint.hdf5']
+)
+def test_inexistent_tag(sample, filename):
+    """
+    Test loading files with inexistent type tags.
+    """
+    filename_full = sample(os.path.join('invalid', filename))
+    with pytest.raises(KeyError):
+        load(filename_full)

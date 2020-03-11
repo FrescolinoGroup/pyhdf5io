@@ -185,4 +185,4 @@ def _to_hashable(obj):
 
 @_to_hashable.register(Iterable)
 def _(obj):
-    return tuple(obj)
+    return tuple([_ensure_hashable(val) for val in obj])

@@ -19,6 +19,6 @@ install:
 script:
   - if [ "$TEST_TYPE" == "compliance" ] ; then pip install .[dev]; pre-commit run --all-files ; fi
   - if [ "$TEST_TYPE" == "test" ] ; then pytest --cov=fsc.hdf5_io --cov-config=.coveragerc ; fi
-  - if [ "$TEST_TYPE" == "test_sympy" ] ; then pip install sympy; pytest --cov=fsc.hdf5_io --cov-config=.coveragerc ; fi
+  - if [ "$TEST_TYPE" == "test_sympy" ] ; then pip install sympy; pytest --cov=fsc.hdf5_io --cov-config=.coveragerc  ; fi
 after_success:
   - codecov
