@@ -2,7 +2,7 @@
 Configuration file for pytest tests.
 """
 
-import os
+import pathlib
 
 import pytest
 
@@ -14,15 +14,8 @@ def test_name(request):
 
 
 @pytest.fixture
-def sample():
+def sample_dir():
     """
-    Returns the full path corresponding to a given sample name.
+    Returns the pathlib.Path of the samples directory.
     """
-    def inner(name):
-        return os.path.join(
-            os.path.join(
-                os.path.dirname(os.path.abspath(__file__)), 'samples'
-            ), name
-        )
-
-    return inner
+    return pathlib.Path(__file__).resolve().parent / 'samples'

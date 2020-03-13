@@ -20,8 +20,8 @@ except IOError:
 with open('version.txt', 'r') as f:
     VERSION = f.read().strip()
 
-if sys.version_info < (3, 5):
-    raise ValueError('only Python 3.5 and higher are supported')
+if sys.version_info < (3, 6):
+    raise ValueError('only Python 3.6 and higher are supported')
 
 setup(
     name=PKGNAME_QUALIFIED,
@@ -34,7 +34,7 @@ setup(
     author_email='frescolino@lists.phys.ethz.ch',
     description=DESCRIPTION,
     install_requires=['numpy', 'decorator', 'h5py', 'fsc.export'],
-    python_requires=">=3.5",
+    python_requires=">=3.6",
     extras_require={
         'dev': [
             'pytest', 'pytest-cov', 'yapf==0.28.0', 'prospector==1.1.7',

@@ -11,11 +11,14 @@ from numpy.testing import assert_equal
 
 from fsc.hdf5_io import save, load
 
-from simple_class import SimpleClass, LegacyClass, AutoClass, AutoClassChild
+from simple_class import (
+    SimpleClass, LegacyClass, AutoClass, AutoClassChild, AutoClassWithOptional,
+    InvalidAttributeKeyType, InvalidOptionalKeyType, ClashingKeys
+)
 
 
 @pytest.fixture(params=['tempfile', 'permanent'])
-def check_save_load(request, test_name, sample):
+def check_save_load(request, test_name, sample_dir):
     """
     Check that a given object remains the same when saved and loaded.
     """
@@ -29,7 +32,7 @@ def check_save_load(request, test_name, sample):
         """
         Compares the current value against a value loaded from a sample file. The file is created if it doesn't exist, and an error is raised.
         """
-        file_name = sample((test_name + '.hdf5').replace('/', '_'))
+        file_name = sample_dir / (test_name + '.hdf5').replace('/', '_')
         try:
             y = load(file_name)
             assert_equal(x, y)
@@ -132,6 +135,18 @@ def test_auto_class(check_save_load):  # pylint: disable=redefined-outer-name
     check_save_load(AutoClass(x=2., y=[1, 2., 3., SimpleClass(3)]))
 
 
+@pytest.mark.parametrize(
+    'obj',
+    [AutoClassWithOptional(x=1, y=2),
+     AutoClassWithOptional(x=1, y=2, z=3)]
+)
+def test_optional_attributes(check_save_load, obj):  # pylint: disable=redefined-outer-name
+    """
+    Test the ``SimpleHDF5Mapping`` with optional attributes.
+    """
+    check_save_load(obj)
+
+
 def test_auto_class_child(check_save_load):  # pylint: disable=redefined-outer-name
     """
     Test serialization using the ``SimpleHDF5Mapping`` with inheritance.
@@ -145,19 +160,19 @@ def test_auto_class_child(check_save_load):  # pylint: disable=redefined-outer-n
     )
 
 
-def test_load_old_dict(sample):
+def test_load_old_dict(sample_dir):
     """
     Test that the 'legacy' version of dict can be de-serialized.
     """
-    x = load(sample('old_dict.hdf5'))
+    x = load(sample_dir / 'old_dict.hdf5')
     assert x == {'a': SimpleClass(4), 'b': [SimpleClass(1), SimpleClass(10)]}
 
 
-def test_legacyclass_notag(sample):
+def test_legacyclass_notag(sample_dir):
     """
     Test that the 'LegacyClass.from_hdf5_file' works even if no 'type_tag' is given.
     """
-    x = LegacyClass.from_hdf5_file(sample('no_tag.hdf5'), y=1.2)
+    x = LegacyClass.from_hdf5_file(sample_dir / 'no_tag.hdf5', y=1.2)
     assert x.x == 10
     assert x.y == 1.2
 
@@ -175,3 +190,41 @@ def test_numpy_array(check_save_load, obj):  # pylint: disable=redefined-outer-n
     Check save / load for numpy arrays
     """
     check_save_load(obj)
+
+
+def test_unhashable_dict_key(sample_dir):
+    """
+    Test loading an invalid dictionary with keys that can not be made
+    hashable.
+    """
+    filename = sample_dir / 'invalid' / 'unhashable_dict_key.hdf5'
+    with pytest.raises(ValueError):
+        load(filename)
+
+
+@pytest.mark.parametrize(
+    'filename', ['inexistent_tag.hdf5', 'inexistent_tag_with_entrypoint.hdf5']
+)
+def test_inexistent_tag(sample_dir, filename):
+    """
+    Test loading files with inexistent type tags.
+    """
+    filename_full = sample_dir / 'invalid' / filename
+    with pytest.raises(KeyError):
+        load(filename_full)
+
+
+@pytest.mark.parametrize(
+    'obj',
+    [InvalidAttributeKeyType(),
+     InvalidOptionalKeyType(),
+     ClashingKeys()]
+)
+def test_incorrect_key_check(obj):
+    """
+    Test that the HDF5_ATTRIBUTES and HDF5_OPTIONAL attributes are
+    checked for consistency upon saving.
+    """
+    with tempfile.NamedTemporaryFile() as tmpf:
+        with pytest.raises(ValueError):
+            save(obj, tmpf.name)
