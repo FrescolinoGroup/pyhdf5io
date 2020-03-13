@@ -2,10 +2,7 @@
 Defines the module's version, read from the version.txt file.
 """
 
-import os
+import pathlib
 
-with open(
-    os.path.join(os.path.dirname(os.path.abspath(__file__)), 'version.txt'),
-    'r'
-) as f:
+with open(pathlib.Path(__file__).parent.resolve() / 'version.txt', 'r') as f:
     __version__ = f.read().strip()
