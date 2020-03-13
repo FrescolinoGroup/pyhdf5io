@@ -18,4 +18,4 @@ def sample_dir():
     """
     Returns the pathlib.Path of the samples directory.
     """
-    return pathlib.Path(__file__).parent.resolve() / 'samples'
+    return pathlib.Path(__file__).resolve().parent / 'samples'
