@@ -12,4 +12,4 @@ class _SympyDeserializer(Deserializable):
     @classmethod
     def from_hdf5(cls, hdf5_handle):
         import sympy
-        return sympy.sympify(hdf5_handle['value'][()])
+        return sympy.sympify(hdf5_handle['value'][()].decode('utf-8'))

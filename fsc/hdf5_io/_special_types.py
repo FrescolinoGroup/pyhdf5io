@@ -26,6 +26,7 @@ class _SpecialTypeTags(SimpleNamespace):
     DICT = 'builtins.dict'
     NUMBER = 'builtins.number'
     STR = 'builtins.str'
+    BYTES = 'builtins.bytes'
     NONE = 'builtins.none'
     NUMPY_ARRAY = 'numpy.ndarray'
     SYMPY = 'sympy.object'  # defined in _sympy_load.py and _sympy_save.py
@@ -69,12 +70,20 @@ def _deserialize_iterable(hdf5_handle):
     return [from_hdf5(hdf5_handle[key]) for key in sorted(int_keys, key=int)]
 
 
-@subscribe_hdf5(_SpecialTypeTags.NUMBER, extra_tags=(_SpecialTypeTags.STR, ))
+@subscribe_hdf5(_SpecialTypeTags.NUMBER, extra_tags=(_SpecialTypeTags.BYTES, ))
 class _ValueDeserializer(Deserializable):
-    """Helper class to de-serialize numbers and strings objects."""
+    """Helper class to de-serialize numbers."""
     @classmethod
     def from_hdf5(cls, hdf5_handle):
         return hdf5_handle['value'][()]
+
+
+@subscribe_hdf5(_SpecialTypeTags.STR)
+class _StringDeserializer(Deserializable):
+    """Helper class to de-serialize strings."""
+    @classmethod
+    def from_hdf5(cls, hdf5_handle):
+        return hdf5_handle['value'][()].decode('utf-8')
 
 
 @subscribe_hdf5(_SpecialTypeTags.NUMPY_ARRAY)
@@ -145,6 +154,12 @@ def _(obj, hdf5_handle):
 @add_type_tag(_SpecialTypeTags.STR)
 def _(obj, hdf5_handle):
     _value_serializer(str(obj), hdf5_handle)
+
+
+@to_hdf5_singledispatch.register(bytes)
+@add_type_tag(_SpecialTypeTags.BYTES)
+def _(obj, hdf5_handle):
+    _value_serializer(obj, hdf5_handle)
 
 
 @to_hdf5_singledispatch.register(type(None))
