@@ -100,6 +100,14 @@ def test_str(check_save_load):  # pylint: disable=redefined-outer-name
     check_save_load(x)
 
 
+def test_bytes(check_save_load):  # pylint: disable=redefined-outer-name
+    """
+    Test bytes serialization.
+    """
+    x = b'foobar'
+    check_save_load(x)
+
+
 def test_list(check_save_load):  # pylint: disable=redefined-outer-name
     """
     Test nested list serialization.
