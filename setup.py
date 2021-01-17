@@ -10,7 +10,7 @@ PKGNAME = 'hdf5_io'
 PKGNAME_QUALIFIED = 'fsc.' + PKGNAME
 
 with open('doc/description.txt', 'r') as f:
-    DESCRIPTION = f.read()
+    DESCRIPTION = f.read().strip()
 try:
     with open('doc/README', 'r') as f:
         README = f.read()
