@@ -7,7 +7,8 @@ import contextlib
 from fsc.export import export
 
 from ._base_classes import HDF5Enabled
-from ._save_load import to_hdf5 as _global_to_hdf5, from_hdf5 as _global_from_hdf5
+from ._save_load import from_hdf5 as _global_from_hdf5
+from ._save_load import to_hdf5 as _global_to_hdf5
 
 
 @export
@@ -23,6 +24,7 @@ class SimpleHDF5Mapping(HDF5Enabled):
     define a list ``HDF5_OPTIONAL``. The same logic as for the ``HDF5_ATTRIBUTES``
     applies, but no error is raised if an attribute does not exist.
     """
+
     HDF5_ATTRIBUTES = ()
     HDF5_OPTIONAL = ()
 
@@ -38,14 +40,13 @@ class SimpleHDF5Mapping(HDF5Enabled):
             hdf5_obj = hdf5_handle[key]
             try:
                 kwargs[key] = hdf5_obj[()]
-            except AttributeError:
+            except (AttributeError, TypeError):
                 kwargs[key] = _global_from_hdf5(hdf5_obj)
         return cls(**kwargs)
 
     def to_hdf5(self, hdf5_handle):
         self._check_hdf5_attributes_lists()
-        to_serialize = [(key, getattr(self, key))
-                        for key in self.HDF5_ATTRIBUTES]
+        to_serialize = [(key, getattr(self, key)) for key in self.HDF5_ATTRIBUTES]
         for key in self.HDF5_OPTIONAL:
             with contextlib.suppress(AttributeError):
                 to_serialize.append((key, getattr(self, key)))
@@ -65,19 +66,18 @@ class SimpleHDF5Mapping(HDF5Enabled):
         for key in cls.HDF5_ATTRIBUTES:
             if not isinstance(key, str):
                 raise ValueError(
-                    "The element '{key}' in {cls}.HDF5_ATTRIBUTES must be a string."
-                    .format(key=key, cls=cls)
+                    f"The element '{key}' in {cls}.HDF5_ATTRIBUTES must be a string."
                 )
         for key in cls.HDF5_OPTIONAL:
             if not isinstance(key, str):
                 raise ValueError(
-                    "The element '{key}' in {cls}.HDF5_OPTIONAL must be a string."
-                    .format(key=key, cls=cls)
+                    f"The element '{key}' in {cls}.HDF5_OPTIONAL must be a string."
                 )
 
         overlapping_keys = set(cls.HDF5_ATTRIBUTES) & set(cls.HDF5_OPTIONAL)
         if overlapping_keys:
             raise ValueError(
-                "The keys {overlapping_keys} are present in both {cls}.HDF5_ATTRIBUTES and {cls}.HDF5_OPTIONAL"
-                .format(overlapping_keys=overlapping_keys, cls=cls)
+                "The keys {overlapping_keys} are present in both {cls}.HDF5_ATTRIBUTES and {cls}.HDF5_OPTIONAL".format(
+                    overlapping_keys=overlapping_keys, cls=cls
+                )
             )

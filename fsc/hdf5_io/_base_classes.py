@@ -13,6 +13,7 @@ class Deserializable(abc.ABC):
     """
     Base class for data which can be deserialized from the HDF5 format.
     """
+
     @classmethod
     @abc.abstractmethod
     def from_hdf5(cls, hdf5_handle):
@@ -29,7 +30,7 @@ class Deserializable(abc.ABC):
         :param hdf5_file: Path of the file.
         :type hdf5_file: str
         """
-        with h5py.File(hdf5_file, 'r') as f:
+        with h5py.File(hdf5_file, "r") as f:
             return cls.from_hdf5(f, *args, **kwargs)
 
 
@@ -37,6 +38,7 @@ class Serializable(abc.ABC):
     """
     Base class for data which can be serialized to the HDF5 format.
     """
+
     @abc.abstractmethod
     def to_hdf5(self, hdf5_handle):
         """
@@ -51,7 +53,8 @@ class Serializable(abc.ABC):
         :param hdf5_file: Path of the file.
         :type hdf5_file: str
         """
-        from ._save_load import to_hdf5_file
+        from ._save_load import to_hdf5_file  # pylint: disable=import-outside-toplevel
+
         to_hdf5_file(self, hdf5_file)
 
 
