@@ -88,7 +88,7 @@ def test_number(check_save_load):  # pylint: disable=redefined-outer-name
     """
     Test number serialization.
     """
-    x = [3, np.float(2.3), 1 + 3j]
+    x = [3, np.float64(2.3), 1 + 3j]
     check_save_load(x)
 
 
