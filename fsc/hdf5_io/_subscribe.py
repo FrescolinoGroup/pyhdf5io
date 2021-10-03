@@ -6,6 +6,8 @@ from decorator import decorator
 
 from fsc.export import export
 
+from ._utils import decode_if_needed
+
 SERIALIZE_MAPPING = {}
 TYPE_TAG_KEY = "type_tag"
 
@@ -55,7 +57,7 @@ def subscribe_hdf5(type_tag, extra_tags=(), check_on_load=True):
                 # check only the top-level class.
                 if curr_cls == cls:
                     assert (
-                        hdf5_handle[TYPE_TAG_KEY][()].decode("utf-8") in all_type_tags
+                        decode_if_needed(hdf5_handle[TYPE_TAG_KEY][()]) in all_type_tags
                     )
                 return from_hdf5_func(curr_cls, hdf5_handle, *args, **kwargs)
 
