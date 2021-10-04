@@ -12,6 +12,7 @@ import numpy as np
 from ._base_classes import Deserializable
 from ._save_load import from_hdf5, to_hdf5, to_hdf5_singledispatch
 from ._subscribe import TYPE_TAG_KEY, subscribe_hdf5
+from ._utils import decode_if_needed
 
 __all__ = []
 
@@ -88,7 +89,7 @@ class _StringDeserializer(Deserializable):
 
     @classmethod
     def from_hdf5(cls, hdf5_handle):
-        return hdf5_handle["value"][()].decode("utf-8")
+        return decode_if_needed(hdf5_handle["value"][()])
 
 
 @subscribe_hdf5(_SpecialTypeTags.NUMPY_ARRAY)
